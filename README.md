@@ -11,7 +11,7 @@
 | Phase 1 研究与设计 | ✅ 静态研究完成（[research/wps-pdf-reverse-engineering.md](research/wps-pdf-reverse-engineering.md)）；UI 观察待 macOS 权限授权 |
 | Phase 2 引擎层 | ✅ **完成**：86/86 测试通过，OCR 跨平台移植（RapidOCR），转换链全格式验证 |
 | Phase 3 UI 层 | ✅ **测试全过**：TS 零错误构建、整栈冒烟、IPC 契约、桌面测试 15/15、**Playwright UI 套件 27/27**；待真机 Windows 回归 |
-| Phase 4 打包交付 | ✅ **打包应用端到端验证通过**（冻结引擎+OCR随附，Electron 44.10.2）；CI 三 job 就绪；推 tag 即出 Windows 安装包 |
+| Phase 4 打包交付 | ✅ **Windows 安装包已由 CI 产出**（Run 42189506102 三 job 全绿：test 12/12 + ui-test 11/11 + package 13/13；产物 660.8MB：NSIS 安装包 + 便携版） |
 
 **测试体系**：引擎 86 + 桌面/平台 15 + UI 27 = **128 项全部通过**。
 平台测试（`tests/test_main_platform.cjs`）在 win32/darwin 双平台模拟下锁定 Windows 适配：venv Python 路径、OCR 助手路径、菜单 hide 角色、will-navigate URL 守卫。
