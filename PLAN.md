@@ -86,6 +86,7 @@
 - [x] 桌面端测试 8/8 通过
 - [x] **完整 Playwright UI 套件 27/27 通过**（14 规格 × 中英双语：打开/编辑/撤销/保存/OCR/图片/页面/批量转换/标注/手势）
 - [x] 修复测试基建问题：补齐遗漏的 PNG fixture（replacement.png）；修复批量转换取消测试的机器速度相关竞态（快速机上 50% flaky：取消点击落到同位置的“关闭”按钮——改为等第一批在途后 dispatchEvent 派发）
+- [x] **平台适配单元测试 15/15**（mock Electron + win32/darwin 双平台模拟：spawn 路径/OCR 助手/菜单 hide 角色/will-navigate URL 守卫）
 - [ ] Windows 适配收尾：文件对话框/快捷键/DPI 实测（需真机）
 
 ### Phase 4 — 打包与交付（✅ 打包应用端到端验证通过，待 Windows CI 执行）
@@ -97,6 +98,7 @@
 - [x] **Windows CI 流水线**（.github/workflows/build-windows.yml：test → ui-test(27项) → freeze → package → 产物上传）
 - [x] build/icon.png（程序化生成，electron-builder 自动转 .ico）
 - [x] LICENSE（AGPL-3.0）+ THIRD_PARTY_NOTICES.md（合规声明）
+- [x] **Electron 升级 44.9.3 → 44.10.2**（内嵌 Node 24.22.2，高于 2026-10-21 安全公告基线）+ 运行时安全门控（prestart/prepackage 钩子，docs/runtime-security.md）
 - [ ] Windows 上执行（或推 tag 触发 CI），产出安装包
 - [ ] 真机 Windows 回归测试
 

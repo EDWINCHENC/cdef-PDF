@@ -46,7 +46,7 @@ await fs.writeFile(
 const source = path.join(stage, 'source');
 await fs.mkdir(source, { recursive: true });
 for (const name of [
-  'src', 'engine', 'desktop', 'scripts', 'tests', 'test-fixtures',
+  'src', 'engine', 'desktop', 'scripts', 'docs', 'tests', 'test-fixtures',
   'README.md', 'PLAN.md', 'LICENSE', 'THIRD_PARTY_NOTICES.md', 'CHANGELOG.md',
   'engine-requirements.txt', 'package-lock.json', 'package.json',
   'playwright.config.ts', 'tsconfig.json', 'vite.config.ts', 'index.html',

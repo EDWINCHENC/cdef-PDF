@@ -10,8 +10,12 @@
 |---|---|
 | Phase 1 研究与设计 | ✅ 静态研究完成（[research/wps-pdf-reverse-engineering.md](research/wps-pdf-reverse-engineering.md)）；UI 观察待 macOS 权限授权 |
 | Phase 2 引擎层 | ✅ **完成**：86/86 测试通过，OCR 跨平台移植（RapidOCR），转换链全格式验证 |
-| Phase 3 UI 层 | ✅ **测试全过**：TS 零错误构建、整栈冒烟、IPC 契约、桌面测试 8/8、**Playwright UI 套件 27/27**；待真机 Windows 回归 |
-| Phase 4 打包交付 | ✅ **冻结架构验证通过**（冻结引擎+OCR 端到端正常）；electron-builder macOS dry-run 产出 .app+zip（DMG 被沙幕阻挡，已配置跳过）；CI 流水线就绪；推 tag 即出 Windows 安装包 |
+| Phase 3 UI 层 | ✅ **测试全过**：TS 零错误构建、整栈冒烟、IPC 契约、桌面测试 15/15、**Playwright UI 套件 27/27**；待真机 Windows 回归 |
+| Phase 4 打包交付 | ✅ **打包应用端到端验证通过**（冻结引擎+OCR随附，Electron 44.10.2）；CI 三 job 就绪；推 tag 即出 Windows 安装包 |
+
+**测试体系**：引擎 86 + 桌面/平台 15 + UI 27 = **128 项全部通过**。
+平台测试（`tests/test_main_platform.cjs`）在 win32/darwin 双平台模拟下锁定 Windows 适配：venv Python 路径、OCR 助手路径、菜单 hide 角色、will-navigate URL 守卫。
+**安全门控**：`scripts/check-runtime.cjs` 强制 Node/Electron 修订版基线（对应 2026-10-21 Node 安全公告），低于基线禁止启动/打包（见 [docs/runtime-security.md](docs/runtime-security.md)）。
 
 **已验证可运行**：本机 macOS 上 `env -u ELECTRON_RUN_AS_NODE electron . --no-sandbox` 可启动完整应用（主进程 + Python 引擎 + UI）。
 **Windows 交付路径**：推送 `v*` tag → GitHub Actions 自动完成 测试 → PyInstaller 冻结 → electron-builder（NSIS + portable）→ 产物上传。

@@ -9,10 +9,13 @@
     "dev": "vite --host 127.0.0.1",
     "build": "tsc -b && vite build",
     "start": "electron .",
-    "test:engine": "../.venv/bin/python -m pytest tests/ -q",
-    "test:desktop": "node --test tests/test_batch_conversion.cjs",
+    "test:engine": "node scripts/test-engine.mjs",
+    "test:desktop": "node --test tests/*.cjs",
     "package": "node scripts/package-win.mjs",
-    "engine:freeze": "bash scripts/freeze-engine.sh"
+    "engine:freeze": "bash scripts/freeze-engine.sh",
+    "prestart": "node scripts/check-runtime.cjs --electron",
+    "prepackage": "node scripts/check-runtime.cjs --electron",
+    "test": "node --test tests/*.cjs"
   },
   "dependencies": {
     "i18next": "^25.6.0",
@@ -26,7 +29,7 @@
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "@vitejs/plugin-react": "^5.2.0",
-    "electron": "44.9.3",
+    "electron": "44.10.2",
     "electron-builder": "^26.0.12",
     "typescript": "^5.9.3",
     "vite": "^7.3.7"

@@ -19,10 +19,10 @@ jobs:
         run: |
           python -m venv .venv
           .venv/Scripts/python -m pip install -r engine-requirements.txt
-      - name: 引擎测试
-        run: .venv/Scripts/python -m pytest tests/ -q
-      - name: 桌面测试
-        run: node --test tests/test_batch_conversion.cjs
+      - name: 引擎测试（86 项）
+        run: npm run test:engine
+      - name: 桌面/平台测试（15 项）
+        run: npm test
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
@@ -66,7 +66,7 @@ jobs:
           python -m venv .venv
           .venv/Scripts/python -m pip install -r engine-requirements.txt pyinstaller
       - name: 冻结引擎（Windows .exe）
-        run: bash scripts/freeze-engine.sh
+        run: npm run engine:freeze
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
