@@ -28,18 +28,27 @@
 4. **electron-builder 可从 macOS 交叉构建 Windows 包**（实测 PE32+ NSIS + portable）
 5. **Electron 44.10.2**（内嵌 Node 24.22.2）高于安全公告基线，门控已固化
 
-## 剩余步骤（均需用户操作）
+## 剩余步骤
 
 | # | 步骤 | 耗时 | 负责 |
 |---|---|---|---|
-| 1 | 定名 D5（替换 CDEF PDF Studio 临时名） | 5 分钟 | 用户决策 |
-| 2 | 建 GitHub 仓库并推送 | 5 分钟 | 用户（外部账户） |
-| 3 | 推 `v0.1.0` tag → CI 自动出包 | ~15 分钟 CI | 自动 |
-| 4 | 真机 Windows 验收（docs/RELEASE.md 清单） | 1 小时 | 用户 |
+| 1 | ✅ 定名 D5：**CDEF PDF Studio**（已全局更名并全量验证） | — | 已完成 |
+| 2 | **Windows 引擎冻结**：解压 `windows-freeze-bundle.zip` 到任意 Windows 电脑，按包内 README 跑 3 条命令，回传 `cdef-pdf-engine.exe` + `cdef-pdf-ocr.exe` | ~10 分钟 | 用户 |
+| 3 | 开发者用回传的 .exe 一键组装（`node scripts/assemble-windows.mjs`） | ~10 分钟 | 开发者 |
+| 4 | （可选）建 GitHub 仓库推送，此后 tag 即 CI 自动出包 | 5 分钟 | 用户（外部账户） |
+| 5 | 真机 Windows 验收（docs/RELEASE.md 清单） | 1 小时 | 用户 |
 
-**备选路径**（无 CI）：任意 Windows 机器跑 `npm run engine:freeze`（5 分钟）→ 把两个 .exe 拷回
-`build/engine-dist/` → 在 macOS 跑 `node scripts/package-win.mjs` → 完整安装包。
-（已文档化于 docs/RELEASE.md 第三节）
+## 已就绪的辅助设施
+
+- `windows-freeze-bundle.zip`：最小冻结包，已在全新目录+全新 venv 实测（与用户执行流程一致，引擎代码与仓库同步）
+- `scripts/assemble-windows.mjs`：回传后一键组装（drop 目录 → NSIS+portable），已实测
+- `scripts/verify-packaged.mjs`：打包应用端到端验证脚本
+- i18n 已平台中立化；NSIS 安装器含 AGPL 许可页
+- 仓库卫生：225 个跟踪文件（最大 5.8MB），构建产物全部 gitignore
+
+## 磁盘占用（gitignore 的构建产物，清理需授权）
+
+`.venv` 375M · `node_modules` 552M · `build/` 2.4G · `release/` 909M · `tests/results/` 2.0G
 
 ## 目录导览
 
