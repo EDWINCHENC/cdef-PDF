@@ -83,3 +83,12 @@ test（86 引擎 + 15 平台 + UI 构建）✅ / ui-test（27 UI）✅ / package
 Windows 平台适配共修复 7 类问题（macOS 无法暴露）：cp1252 编码 ×4 处
 （OCR 助手/stdout/stdin/测试读取）、venv 路径、Meta 快捷键、npx spawn、
 批处理取消竞态。全部有本地 cp1252 模拟回归覆盖。
+
+## v0.1.2 图标交付（2026-11-06 晚）
+
+- 新图标「隐私小屋」（方向 B）：build/icon.png，三语义色，32px 可读
+- 修复图标未嵌入 bug：package-win.mjs 此前不暂存 build/，导致 v0.1.0/v0.1.1
+  的 exe 静默回退默认 Electron 图标（CI 日志实证）
+- 版本号对齐：package.json 0.1.0 → 0.1.2（此前产物文件名与 tag 不一致）
+- Release：https://github.com/EDWINCHENC/cdef-PDF/releases/tag/v0.1.2
+  （NSIS 安装包 336MB + 便携版 325MB；旧 tag v0.1.0/v0.1.1 已清理）
