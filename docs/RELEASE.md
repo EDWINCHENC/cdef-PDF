@@ -48,17 +48,21 @@ CI（`.github/workflows/build-windows.yml`）自动执行三个 job，**任一�
 NSIS 配置/图标转换/asar 结构全部正确）。唯一无法交叉的是 PyInstaller 引擎冻结
 （`cdef-pdf-engine.exe` / `cdef-pdf-ocr.exe` 必须在 Windows 上产出）。
 
-因此除 CI 外还有一条混合路径：
+### 标准交付路径（Windows 引擎回传后一键组装）
 
 ```sh
-# 1. 在任意 Windows 机器（或一次性 CI job）冻结引擎
-npm run engine:freeze
-# 2. 将 build/engine-dist/*.exe 拷回本仓库 build/engine-dist/（覆盖 macOS 产物）
-# 3. 在 macOS 上直接交叉构建完整 Windows 包
-node scripts/package-win.mjs          # 产物在 build/staging-win/release/
+# 1. 用户侧：解压 windows-freeze-bundle.zip 到任意 Windows 电脑，跑包内 3 条命令
+#    （该包已在 macOS 全新目录+全新 venv 实测通过：依赖安装→冻结→引擎功能冒烟全过）
+# 2. 用户回传 build/engine-dist/ 下的 cdef-pdf-engine.exe 与 cdef-pdf-ocr.exe
+# 3. 开发者侧：把两个 .exe 放入 build/windows-drop/，然后一条命令：
+node scripts/assemble-windows.mjs
+# 4. 产物：build/staging-win/release/CDEF PDF Studio-0.1.0-x64.exe（NSIS 安装包）
+#         + CDEF PDF Studio-0.1.0-portable.exe（便携版）
 ```
 
-⚠️ 未执行步骤 1-2 时，交叉构建产出的 .exe 内是 macOS 引擎二进制，**不可分发**。
+`scripts/assemble-windows.mjs` 已实测：自动发现 drop 目录引擎二进制、清理并注入
+engine-dist、交叉构建、列出产物。
+⚠️ 注入非 Windows 引擎时构建仍会成功，但产物不可分发——组装前务必确认 .exe 来源。
 
 ## 四、本地 Windows 构建（无 CI 时的备选）
 
