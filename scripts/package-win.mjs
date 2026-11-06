@@ -34,26 +34,55 @@ await fs.writeFile(
   JSON.stringify({
     name: 'openpdf-studio-windows',
     version: JSON.parse(await fs.readFile(path.join(root, 'package.json'), 'utf8')).version,
+    description: '免费开源 PDF 编辑器｜WPS PDF 交互逆向研究与独立实现｜本地编辑、OCR、PDF 转 Word',
+    author: 'OpenPDF Studio contributors',
     main: 'desktop/main.cjs',
     license: 'AGPL-3.0-or-later',
   }),
 );
 
-// 引擎冻结产物（build/engine-dist/）作为 extraResources 注入
+// source/ 目录：打包态 main.cjs 从这里读取 src/i18n/*.json 构建原生菜单；
+// 同时履行 AGPL-3.0 的随附源码出示义务。缺失会导致 set-locale 崩溃、应用白屏。
+const source = path.join(stage, 'source');
+await fs.mkdir(source, { recursive: true });
+for (const name of [
+  'src', 'engine', 'desktop', 'scripts', 'tests', 'test-fixtures',
+  'README.md', 'PLAN.md', 'LICENSE', 'THIRD_PARTY_NOTICES.md', 'CHANGELOG.md',
+  'engine-requirements.txt', 'package-lock.json', 'package.json',
+  'playwright.config.ts', 'tsconfig.json', 'vite.config.ts', 'index.html',
+  'electron-builder.yml',
+]) {
+  try {
+    await fs.cp(path.join(root, name), path.join(source, name), {
+      recursive: true,
+      filter: (p) => !p.includes('/results/') && !p.includes('__pycache__') && !p.includes('/.venv/'),
+    });
+  } catch (e) {
+    if (e.code !== 'ENOENT') throw e;
+  }
+}
+console.log('==> source/ 已暂存（菜单语言文件 + AGPL 源码出示）');
+
+// 引擎冻结产物（build/engine-dist/）作为 extraResources 注入。
+// electron-builder 的 extraResources.from 相对 staging 目录解析，须先复制进来。
 const engineDist = path.join(root, 'build', 'engine-dist');
 try {
   const stat = await fs.stat(engineDist);
   if (!stat.isDirectory()) throw new Error('not a directory');
+  await fs.cp(engineDist, path.join(stage, 'build', 'engine-dist'), { recursive: true });
   console.log('==> 发现引擎冻结产物，将随附');
 } catch {
-  console.warn('⚠️  未找到 build/engine-dist/ —— 请先在 Windows 上运行 scripts/freeze-engine.sh');
+  console.warn('⚠️  未找到 build/engine-dist/ —— 请先运行 scripts/freeze-engine.sh（Windows 产物须在 Windows 构建）');
   console.warn('    本次打包仅产出外壳，引擎需另行放置到 resources/engine/');
 }
 
-console.log('==> 运行 electron-builder（win x64: NSIS + portable）');
+// 平台参数：默认 win x64（NSIS + portable）；mac 仅用于开发验证
+const platform = process.argv[2] === 'mac' ? 'mac' : 'win';
+const arch = platform === 'mac' ? 'arm64' : 'x64';
+console.log(`==> 运行 electron-builder（${platform} ${arch}）`);
 execFileSync(
   'npx',
-  ['electron-builder', '--win', '--x64', '--config', 'electron-builder.yml'],
+  ['electron-builder', `--${platform}`, `--${arch}`, '--config', 'electron-builder.yml'],
   { cwd: stage, stdio: 'inherit' },
 );
 

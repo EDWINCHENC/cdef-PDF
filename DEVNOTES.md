@@ -42,6 +42,22 @@ sudo chown -R chen /opt/homebrew     # 修 Homebrew（若想用 brew）
 # ~/.cache/uv 同理；~/Library/Caches 的 ACL 需排查来源（安全软件？）
 ```
 
+## 打包验证结果（2026-11-06，macOS dry-run）
+
+`node scripts/package-win.mjs mac`（接受平台参数，默认 win）完整跑通，并**端到端验证打包应用**：
+窗口渲染 → 打开 PDF（3 页缩略图）→ 页内编辑 → 保存 → 引擎读回验证编辑生效 → 无页面错误。
+
+排雷记录（三个都会导致 Windows 交付物故障的坑）：
+
+| 坑 | 现象 | 修复 |
+|---|---|---|
+| **缺 `source/` 目录** | 打包态 `set-locale` 读 `<root>/source/src/i18n/*.json` 失败 → `initLanguage()` reject → **应用白屏** | package-win.mjs  stage `source/`（含 src/engine/tests/文档，兼履行 AGPL 源码出示义务）；electron-builder.yml `files` 加 `source/**/*` |
+| **extraResources 相对路径** | `from: build/engine-dist/` 相对 staging 目录解析，staging 里没有 → 引擎静默缺失 | package-win.mjs 先把 engine-dist 复制进 `stage/build/engine-dist/` |
+| **staging 无 node_modules** | electron-builder 推不出 Electron 版本 | electron-builder.yml 显式 `electronVersion: 44.9.3` |
+
+本机 dry-run 需 `HOME=/tmp/fakehome ELECTRON_BUILDER_CACHE=/tmp/eb-cache`（缓存 ACL 问题，CI 无此问题）。
+产物位置：`build/staging-win/release/`（脚本以 staging 为 cwd）。
+
 ## 引擎冻结验证结果（2026-11-06）
 
 ```sh

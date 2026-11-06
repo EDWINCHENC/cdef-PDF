@@ -88,17 +88,17 @@
 - [x] 修复测试基建问题：补齐遗漏的 PNG fixture（replacement.png）；修复批量转换取消测试的机器速度相关竞态（快速机上 50% flaky：取消点击落到同位置的“关闭”按钮——改为等第一批在途后 dispatchEvent 派发）
 - [ ] Windows 适配收尾：文件对话框/快捷键/DPI 实测（需真机）
 
-### Phase 4 — 打包与交付（✅ 冻结架构已验证，待 Windows 构建机/CI 执行）
-- [x] electron-builder.yml（NSIS 安装包 + portable 双产物，x64）
-- [x] scripts/package-win.mjs（暂存 + 构建编排）
+### Phase 4 — 打包与交付（✅ 打包应用端到端验证通过，待 Windows CI 执行）
+- [x] electron-builder.yml（NSIS 安装包 + portable 双产物，x64；显式 electronVersion；mac 仅 zip 用于开发验证）
+- [x] scripts/package-win.mjs（平台参数化；stage source/ 供菜单语言+AGPL；stage engine-dist 供 extraResources）
 - [x] scripts/freeze-engine.sh（跨平台 PyInstaller 冻结；⚠️ 不能交叉编译，Windows .exe 须在 Windows 构建）
-- [x] **冻结产物端到端验证通过**：冻结引擎 open/render/ocr_plan + 冻结 OCR 识别 5 行，与打包后运行方式完全一致
-- [x] **Windows CI 流水线**（.github/workflows/build-windows.yml：测试 → 冻结 → 构建 → NSIS/portable 产物）
+- [x] **打包应用端到端验证通过**：窗口渲染→打开 PDF→页内编辑→保存→读回验证（与 Windows 交付物同架构）
+- [x] **排雷三个 Windows 交付物杀手**：缺 source/ 白屏、extraResources 相对路径失效、staging 无 node_modules（详见 DEVNOTES）
+- [x] **Windows CI 流水线**（.github/workflows/build-windows.yml：test → ui-test(27项) → freeze → package → 产物上传）
 - [x] build/icon.png（程序化生成，electron-builder 自动转 .ico）
 - [x] LICENSE（AGPL-3.0）+ THIRD_PARTY_NOTICES.md（合规声明）
-- [ ] Windows 上执行 freeze-engine → package-win，产出安装包（或推送 tag 触发 CI）
-- [ ] 测试矩阵（引擎 pytest + UI 回归）
-- [ ] 交付：安装包 + 源码仓库 + 文档（功能边界/已知限制/第三方声明）
+- [ ] Windows 上执行（或推 tag 触发 CI），产出安装包
+- [ ] 真机 Windows 回归测试
 
 ## 六、待决策项（需用户确认）
 

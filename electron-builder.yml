@@ -3,6 +3,8 @@
 appId: studio.openpdf.desktop
 productName: OpenPDF Studio
 copyright: 开源项目，与 WPS / 金山公司无隶属关系
+# staging 目录无 node_modules，显式指定 Electron 版本
+electronVersion: 44.9.3
 
 directories:
   output: release
@@ -18,6 +20,7 @@ extraResources:
 files:
   - dist/**/*
   - desktop/**/*
+  - source/**/*
   - package.json
   - "!**/*.map"
 
