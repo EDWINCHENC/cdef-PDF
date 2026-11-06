@@ -76,7 +76,7 @@
 - [x] worker.py JSON-lines 协议就位
 - [ ] Windows 引擎冒烟测试（纯 Python + onnxruntime，预期无系统依赖；最终在 Windows 验证）
 
-### Phase 3 — UI 层（🔧 移植与验证完成，待真机 Windows 回归）
+### Phase 3 — UI 层（✅ 测试全过，待真机 Windows 回归）
 - [x] 移植 React UI（src/：App/Viewer/Inspector/PageManager/OCR/批量转换/标注，中英 i18n）
 - [x] package.json 跨平台化（修复 @vitejs/plugin-react 版本不存在问题 → ^5.2.0；补 @types/react）
 - [x] **main.cjs 四处 Windows 适配**：venv Python 路径（Scripts/python.exe）、OCR 助手指向 ocr_rapidocr.py、菜单 hide 角色仅 macOS、will-navigate 的 file:// URL 反斜杠修复（否则 Windows 拒绝加载自身页面）
@@ -84,8 +84,9 @@
 - [x] **Electron 整栈冒烟通过**：主进程 → spawn Python 引擎 → UI 加载，无错误
 - [x] **IPC 协议契约验证**：open/render/objects/search/export/close 全链路通过
 - [x] 桌面端测试 8/8 通过
+- [x] **完整 Playwright UI 套件 27/27 通过**（14 规格 × 中英双语：打开/编辑/撤销/保存/OCR/图片/页面/批量转换/标注/手势）
+- [x] 修复测试基建问题：补齐遗漏的 PNG fixture（replacement.png）；修复批量转换取消测试的机器速度相关竞态（快速机上 50% flaky：取消点击落到同位置的“关闭”按钮——改为等第一批在途后 dispatchEvent 派发）
 - [ ] Windows 适配收尾：文件对话框/快捷键/DPI 实测（需真机）
-- [ ] UI 回归测试（Playwright，需显示环境）
 
 ### Phase 4 — 打包与交付（✅ 冻结架构已验证，待 Windows 构建机/CI 执行）
 - [x] electron-builder.yml（NSIS 安装包 + portable 双产物，x64）

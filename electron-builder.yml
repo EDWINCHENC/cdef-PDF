@@ -30,6 +30,12 @@ win:
       arch: x64
   artifactName: ${productName}-${version}-${arch}.${ext}
 
+# macOS 仅用于开发验证，跳过 DMG（沙箱/无 UI 环境不可用）
+mac:
+  target:
+    - target: zip
+      arch: arm64
+
 nsis:
   oneClick: false
   perMachine: false
