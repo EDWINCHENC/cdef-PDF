@@ -19,11 +19,9 @@ for(const locale of ['zh-CN','en-US'])test(`${locale}: multi-file conversions, r
  await page.screenshot({path:`tests/results/batch-conversion-plan-${locale}.png`});
  // Native PNG rendering provides time to cancel while a file is in flight.
  await format.selectOption('png');await page.getByRole('button',{name:t.batchStart,exact:true}).click();
- // 快速机上整批转换约 150ms 即完成：真实鼠标点击的往返窗口(~100ms)会与完成态竞态，
- // 落到同位置的“关闭”按钮上。等到第一份已转换、第二份在途后，用 dispatchEvent 直接派发
- // 点击（无坐标往返），保证取消确定性地作用于在途文件。
- await expect(page.locator('.ocr-progress progress')).toHaveAttribute('value','1');
- await page.getByRole('button',{name:t.batchCancel,exact:true}).dispatchEvent('click');
+ // 取消必须在第一批在途时直发 IPC：定位器解析+dispatchEvent 的往返（几十毫秒）
+ // 在 CI 快机上会让整批先完成，取消竞态失败（上一轮 run 实测 flaky）。
+ await page.evaluate(()=>(window as any).studio.batch('cancel'));
  await expect(page.getByText(t.batchCancelled,{exact:true})).toBeVisible();expect(await fs.readdir(output)).toEqual([]);
  // The second source needs OCR; the first output must be rolled back as well.
  await choose(['research.pdf','ocr-batch.pdf']);await format.selectOption('txt');await page.getByRole('button',{name:t.batchStart,exact:true}).click();
