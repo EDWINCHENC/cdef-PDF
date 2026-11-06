@@ -36,7 +36,7 @@ def test_move_preserves_stream_order_image_bytes_alpha_and_overlaid_text():
     e.history(sid,'undo');assert e.session(sid).data==raw
     e.history(sid,'redo');reopened=e.open(e.export(sid)['data'],'reopened.pdf')['id']
     assert e.objects(reopened)['images'][0]['rect']==pytest.approx([90,170,330,330])
-    Path('tests/results/image-move-diff.json').write_text(json.dumps(candidate,indent=2))
+    Path('tests/results/image-move-diff.json').write_text(json.dumps(candidate,indent=2),encoding='utf-8')
 
 
 def test_image_layer_isolated_and_preserves_alpha():

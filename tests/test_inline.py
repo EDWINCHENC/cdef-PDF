@@ -91,7 +91,7 @@ def test_text_grows_into_whitespace_and_roundtrips_with_undo():
     engine.history(sid,'undo');assert engine.session(sid).data==raw
     engine.history(sid,'redo');assert replacement in ''.join(x['text'] for x in engine.objects(sid)['texts'])
     import json
-    Path('tests/results/expanded-text-diff.json').write_text(json.dumps(preview,indent=2))
+    Path('tests/results/expanded-text-diff.json').write_text(json.dumps(preview,indent=2),encoding='utf-8')
 
 
 @pytest.mark.parametrize('obstacle',['text','image','table'])

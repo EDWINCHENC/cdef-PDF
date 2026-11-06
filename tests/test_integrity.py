@@ -12,10 +12,10 @@ def test_simple_object_preserves_other_streams():
  old=[before.xref_stream(x) for x in before[0].get_contents()];new=[after.xref_stream(x) for x in after[0].get_contents()]
  assert len(old)==len(new);assert sum(a!=b for a,b in zip(old,new))==1
  for i in [1,2]:assert before[i].get_pixmap().samples==after[i].get_pixmap().samples
- Path('tests/results/text-diff.json').write_text(json.dumps(p,indent=2))
+ Path('tests/results/text-diff.json').write_text(json.dumps(p,indent=2),encoding='utf-8')
 
 def test_locales():
- a=json.loads(Path('src/i18n/en-US.json').read_text());b=json.loads(Path('src/i18n/zh-CN.json').read_text());assert a.keys()==b.keys();assert all(a.values()) and all(b.values())
+ a=json.loads(Path('src/i18n/en-US.json').read_text(encoding='utf-8'));b=json.loads(Path('src/i18n/zh-CN.json').read_text(encoding='utf-8'));assert a.keys()==b.keys();assert all(a.values()) and all(b.values())
 
 def test_import_docx_and_image():
  from docx import Document

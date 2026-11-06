@@ -214,7 +214,7 @@ def recognize_page(page):
         with tempfile.TemporaryDirectory() as td:
             path=Path(td)/'page.png';path.write_bytes(png(page,2))
             command=[sys.executable,str(helper),str(path)] if helper.suffix=='.py' else [str(helper),str(path)]
-            result=subprocess.run(command,capture_output=True,text=True,timeout=300)
+            result=subprocess.run(command,capture_output=True,text=True,timeout=300,encoding='utf-8',errors='replace')
         if result.returncode:raise EngineError('ocrFailed')
         lines=json.loads(result.stdout)
         if not isinstance(lines,list):raise ValueError()

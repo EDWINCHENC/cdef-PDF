@@ -35,7 +35,7 @@ def test_highlight_cjk_rotation_crop_and_external_annotations(document):
  assert len(tagged)==8;assert all(a['/Subtype']=='/Highlight' and len(a['/QuadPoints'])==8 and a['/Contents']=='合同' for a in tagged)
  reopened=e.open(b64(out));assert len(e.markups(reopened['id'])['items'])==8
  e.history(sid,'undo');assert e.session(sid).data==before;e.history(sid,'redo');assert e.session(sid).data==after
- Path('tests/results/keyword-markup-diff.json').write_text(json.dumps({'baseContentStreamsExact':True,'basePremultipliedPixelsExact':True,'independentReader':'pypdf','preview':p},ensure_ascii=False,indent=2))
+ Path('tests/results/keyword-markup-diff.json').write_text(json.dumps({'baseContentStreamsExact':True,'basePremultipliedPixelsExact':True,'independentReader':'pypdf','preview':p},ensure_ascii=False,indent=2),encoding='utf-8')
 
 @pytest.mark.parametrize('style,kind',[('highlight',f.PDF_ANNOT_HIGHLIGHT),('underline',f.PDF_ANNOT_UNDERLINE),('strikeout',f.PDF_ANNOT_STRIKE_OUT)])
 def test_types_diagonal_duplicate_and_selective_removal(document,style,kind):

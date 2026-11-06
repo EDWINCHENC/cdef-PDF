@@ -68,6 +68,12 @@ def ocr(png_path: str) -> list[dict]:
 
 
 def main() -> int:
+    # Windows 默认代码页（cp1252/cp936）无法编码中文：强制 stdout 为 UTF-8，
+    # 否则 print(ensure_ascii=False) 会 UnicodeEncodeError 导致子进程非零退出。
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+    except Exception:
+        pass
     if len(sys.argv) != 2:
         print(json.dumps({"error": "usage: ocr_rapidocr.py <page.png>"}))
         return 2

@@ -36,7 +36,7 @@ def test_real_batch_pixels_search_save_history(batch):
  reopened=e.open(b64(out));assert e.ocr_plan(reopened['id'],[0,1])['total']==0
  e.history(sid,'undo');assert e.session(sid).data==before
  e.history(sid,'redo');assert e.session(sid).data==after
- Path('tests/results/ocr-batch-diff.json').write_text(json.dumps({'pages':6,'renderScale':2,'allPagePixelsExact':True,'scanImageBytesExact':True,'independentReader':'pypdf','preview':p},ensure_ascii=False,indent=2))
+ Path('tests/results/ocr-batch-diff.json').write_text(json.dumps({'pages':6,'renderScale':2,'allPagePixelsExact':True,'scanImageBytesExact':True,'independentReader':'pypdf','preview':p},ensure_ascii=False,indent=2),encoding='utf-8')
 
 def test_cancel_preserves_document_and_previous_preview(batch):
  e,sid=batch;before=e.session(sid).data;p=e.preview(sid,[{'type':'rotate','page':2}])
