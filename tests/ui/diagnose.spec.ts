@@ -9,6 +9,9 @@ test('diagnose open-render chain', async () => {
     args: [root, '--no-sandbox', '--user-data-dir=' + path.join(root, 'tests/results/profile-diag-' + Date.now())],
     cwd: root,
   });
+  const mainLogs: string[] = [];
+  app.process().stderr?.on('data', d => mainLogs.push('[main-stderr] ' + d.toString().slice(0, 500)));
+  app.process().stdout?.on('data', d => mainLogs.push('[main-stdout] ' + d.toString().slice(0, 500)));
   try {
     const page = await app.firstWindow();
     const logs: string[] = [];
@@ -57,6 +60,7 @@ test('diagnose open-render chain', async () => {
     }));
     console.log('DIAG step3 ui-state: ' + JSON.stringify(state));
     console.log('DIAG logs: ' + JSON.stringify(logs.slice(0, 15)));
+    console.log('DIAG main-process-output: ' + JSON.stringify(mainLogs.slice(-30), null, 1));
   } finally {
     await app.close();
   }
