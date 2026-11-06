@@ -1,9 +1,10 @@
+import {venvPython} from './venv-python';
 import {test,expect,_electron as electron} from '@playwright/test';
 import fs from 'node:fs/promises';import path from 'node:path';import {execFileSync} from 'node:child_process';
 
 for(const locale of ['zh-CN','en-US'])test(`${locale}: place new text by mouse, grow, auto-save, cancel and undo`,async()=>{
  const root=path.resolve('.'),dir=path.join(root,'tests/results/placement-'+locale);await fs.mkdir(dir,{recursive:true});
- const file=path.join(dir,'blank.pdf');execFileSync(path.join(root,'.venv/bin/python'),['-c','import pymupdf as f,sys;d=f.open();d.new_page(width=600,height=800);d.new_page(width=600,height=800);d.save(sys.argv[1])',file]);
+ const file=path.join(dir,'blank.pdf');execFileSync(venvPython(root),['-c','import pymupdf as f,sys;d=f.open();d.new_page(width=600,height=800);d.new_page(width=600,height=800);d.save(sys.argv[1])',file]);
  const t=JSON.parse(await fs.readFile(`src/i18n/${locale}.json`,'utf8'));
  const app=await electron.launch({args:[root,'--no-sandbox','--user-data-dir='+path.join(dir,'profile-'+Date.now())]});
  try{
