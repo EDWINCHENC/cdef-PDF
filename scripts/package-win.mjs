@@ -80,9 +80,12 @@ try {
 const platform = process.argv[2] === 'mac' ? 'mac' : 'win';
 const arch = platform === 'mac' ? 'arm64' : 'x64';
 console.log(`==> 运行 electron-builder（${platform} ${arch}）`);
+// Windows 上 npx 是 npx.cmd：execFileSync 无 shell 时无法 spawn .cmd（ENOENT，
+// CI 实测踩到）。改用 node 直接调用 electron-builder CLI 入口，全平台可靠。
+const ebCli = path.join(root, 'node_modules', 'electron-builder', 'cli.js');
 execFileSync(
-  'npx',
-  ['electron-builder', `--${platform}`, `--${arch}`, '--config', 'electron-builder.yml'],
+  process.execPath,
+  [ebCli, `--${platform}`, `--${arch}`, '--config', 'electron-builder.yml'],
   { cwd: stage, stdio: 'inherit' },
 );
 
