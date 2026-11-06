@@ -6,7 +6,7 @@
 
 | # | 决策 | 当前值 | 影响面 |
 |---|---|---|---|
-| D5 | **产品命名** | 临时名 `CDEF PDF Studio`（包名 `cdef-pdf-studio`） | package.json / electron-builder.yml 的 productName / index.html 标题 / i18n 的 appName / 应用图标说明 |
+| D5 | **产品命名** | ✅ 已定稿：`CDEF PDF Studio`（包名 `cdef-pdf-studio`，2026-11-06 全局更名并验证） | — |
 | D2 | 渲染引擎 | PyMuPDF（已定） | — |
 | D4 | 分发形态 | NSIS 安装包 + 便携版（已定） | electron-builder.yml |
 
