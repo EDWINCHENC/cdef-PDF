@@ -12,6 +12,9 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -23,9 +26,6 @@ jobs:
         run: npm run test:engine
       - name: 桌面/平台测试（15 项）
         run: npm test
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
       - name: UI 构建
         run: |
           npm ci
@@ -51,6 +51,8 @@ jobs:
           npm ci
           npm run build
       - name: Playwright UI 测试（27 项，中英双语）
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
         run: npx playwright test --reporter=line
 
   package:
@@ -58,6 +60,9 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -67,9 +72,6 @@ jobs:
           .venv/Scripts/python -m pip install -r engine-requirements.txt pyinstaller
       - name: 冻结引擎（Windows .exe）
         run: npm run engine:freeze
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
       - name: 安装前端依赖并构建
         run: |
           npm ci
@@ -81,6 +83,6 @@ jobs:
         with:
           name: windows-installer
           path: |
-            release/*.exe
-            release/*.blockmap
+            build/staging-win/release/*.exe
+            build/staging-win/release/*.blockmap
           if-no-files-found: error
