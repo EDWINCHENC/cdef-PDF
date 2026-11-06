@@ -1,0 +1,45 @@
+# electron-builder 配置：Windows 独立版
+# 产物：NSIS 安装包 + 便携版（x64）
+appId: studio.openpdf.desktop
+productName: OpenPDF Studio
+copyright: 开源项目，与 WPS / 金山公司无隶属关系
+
+directories:
+  output: release
+  buildResources: build
+
+# 引擎与 OCR 助手作为 extraResources 随附（不进 asar，便于 PyInstaller 产物布局）
+extraResources:
+  - from: build/engine-dist/
+    to: engine/
+    filter:
+      - "**/*"
+
+files:
+  - dist/**/*
+  - desktop/**/*
+  - package.json
+  - "!**/*.map"
+
+win:
+  icon: build/icon.png
+  target:
+    - target: nsis
+      arch: x64
+    - target: portable
+      arch: x64
+  artifactName: ${productName}-${version}-${arch}.${ext}
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: OpenPDF Studio
+
+portable:
+  artifactName: ${productName}-${version}-portable.${ext}
+
+# 引擎冻结产物较大，压缩级别均衡
+compression: normal

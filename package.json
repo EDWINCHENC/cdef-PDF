@@ -1,0 +1,50 @@
+{
+  "name": "openpdf-studio-windows",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "desktop/main.cjs",
+  "description": "免费开源 PDF 编辑器（Windows 独立版）｜WPS PDF 交互逆向研究与独立实现｜本地编辑、OCR、PDF 转 Word",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc -b && vite build",
+    "start": "electron .",
+    "test:engine": "../.venv/bin/python -m pytest tests/ -q",
+    "test:desktop": "node --test tests/test_batch_conversion.cjs",
+    "package": "node scripts/package-win.mjs",
+    "engine:freeze": "bash scripts/freeze-engine.sh"
+  },
+  "dependencies": {
+    "i18next": "^25.6.0",
+    "lucide-react": "^0.468.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-i18next": "^16.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^5.2.0",
+    "electron": "44.9.3",
+    "electron-builder": "^26.0.12",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.7"
+  },
+  "license": "AGPL-3.0-or-later",
+  "author": "OpenPDF Studio contributors",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aotefan/openpdf-studio"
+  },
+  "keywords": [
+    "pdf-editor",
+    "free-pdf-editor",
+    "wps-pdf",
+    "reverse-engineering",
+    "rea",
+    "ocr",
+    "pdf-to-word",
+    "windows",
+    "chinese"
+  ]
+}

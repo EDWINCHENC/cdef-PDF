@@ -1,0 +1,22 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Node
+node_modules/
+dist/
+
+# 构建产物（icon.png 与配置需保留）
+build/*
+!build/icon.png
+release/
+
+# 测试中间产物
+tests/results/*
+!tests/results/.gitkeep
+
+# 系统文件
+.DS_Store
+*.log

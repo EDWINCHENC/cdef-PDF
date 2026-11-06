@@ -1,0 +1,11 @@
+# 引擎层依赖（与 .venv 锁定版本一致，见 uv pip freeze）
+pymupdf==1.28.2
+pillow
+pypdf
+python-docx
+python-pptx
+openpyxl
+xlsxwriter
+rapidocr-onnxruntime
+# 测试
+pytest

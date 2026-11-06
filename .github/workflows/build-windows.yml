@@ -1,0 +1,64 @@
+name: build-windows
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: 安装引擎依赖
+        run: |
+          python -m venv .venv
+          .venv/Scripts/python -m pip install -r engine-requirements.txt
+      - name: 引擎测试
+        run: .venv/Scripts/python -m pytest tests/ -q
+      - name: 桌面测试
+        run: node --test tests/test_batch_conversion.cjs
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: UI 构建
+        run: |
+          npm ci
+          npm run build
+
+  package:
+    needs: test
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: 安装引擎依赖（含 PyInstaller）
+        run: |
+          python -m venv .venv
+          .venv/Scripts/python -m pip install -r engine-requirements.txt pyinstaller
+      - name: 冻结引擎（Windows .exe）
+        run: bash scripts/freeze-engine.sh
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: 安装前端依赖并构建
+        run: |
+          npm ci
+          npm run build
+      - name: 打包（NSIS 安装包 + portable）
+        run: npm run package
+      - name: 收集产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-installer
+          path: |
+            release/*.exe
+            release/*.blockmap
+          if-no-files-found: error
