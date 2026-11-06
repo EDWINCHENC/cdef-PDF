@@ -1,5 +1,5 @@
 {
-  "name": "openpdf-studio-windows",
+  "name": "cdef-pdf-studio",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -35,11 +35,7 @@
     "vite": "^7.3.7"
   },
   "license": "AGPL-3.0-or-later",
-  "author": "OpenPDF Studio contributors",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/aotefan/openpdf-studio"
-  },
+  "author": "CDEF PDF Studio contributors",
   "keywords": [
     "pdf-editor",
     "free-pdf-editor",

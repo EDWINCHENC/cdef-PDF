@@ -91,7 +91,7 @@ for (const platform of ['win32', 'darwin']) {
       assert.ok(command.endsWith(path.join('.venv', 'bin', 'python')), `darwin 应使用 bin/python，实际: ${command}`);
     }
     assert.ok(args[0].endsWith(path.join('engine', 'worker.py')), `应启动 engine/worker.py，实际: ${args[0]}`);
-    assert.ok(options.env.OPENPDF_OCR.endsWith(path.join('engine', 'ocr_rapidocr.py')), `OPENPDF_OCR 应指向 ocr_rapidocr.py，实际: ${options.env.OPENPDF_OCR}`);
+    assert.ok(options.env.CDEF_PDF_OCR.endsWith(path.join('engine', 'ocr_rapidocr.py')), `CDEF_PDF_OCR 应指向 ocr_rapidocr.py，实际: ${options.env.CDEF_PDF_OCR}`);
   });
 }
 

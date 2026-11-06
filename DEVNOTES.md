@@ -48,7 +48,7 @@ sudo chown -R chen /opt/homebrew     # 修 Homebrew（若想用 brew）
 窗口渲染 → 打开 PDF（3 页缩略图）→ 页内编辑 → 保存 → 引擎读回验证编辑生效 → 无页面错误。
 
 **Windows 目标交叉构建已实测**：`node scripts/package-win.mjs`（默认 win）在 macOS 上成功产出
-`OpenPDF Studio-0.1.0-x64.exe`（NSIS 安装包，PE32+）+ portable.exe，图标嵌入 exe、
+`CDEF PDF Studio-0.1.0-x64.exe`（NSIS 安装包，PE32+）+ portable.exe，图标嵌入 exe、
 asar 含 source/（98 条目）。唯一无法交叉的环节是 PyInstaller 引擎冻结（需 Windows 产出 .exe）。
 
 排雷记录（三个都会导致 Windows 交付物故障的坑）：
@@ -72,10 +72,10 @@ PYINSTALLER_CONFIG_DIR=/tmp/pyinstaller-config bash scripts/freeze-engine.sh
 
 | 二进制 | 大小 | 用途 |
 |---|---|---|
-| `build/engine-dist/openpdf-engine` | 134 MB | 引擎主进程（PyMuPDF + RapidOCR 全内置） |
+| `build/engine-dist/cdef-pdf-engine` | 134 MB | 引擎主进程（PyMuPDF + RapidOCR 全内置） |
 | `build/engine-dist/ocr_rapidocr` | 103 MB | OCR 助手（ONNX 模型内置） |
 
-**端到端验证通过**：以打包后相同方式启动（冻结引擎 + `OPENPDF_OCR` 指向冻结 OCR），open/render/ocr_plan/ocr_begin/step/finish 全链路正常，中文扫描件识别 5 行。
+**端到端验证通过**：以打包后相同方式启动（冻结引擎 + `CDEF_PDF_OCR` 指向冻结 OCR），open/render/ocr_plan/ocr_begin/step/finish 全链路正常，中文扫描件识别 5 行。
 
 **已知权衡**：onefile 每次启动需解压到临时目录（启动稍慢）；如优化启动速度可改 `--onedir`（CI 中把 `engine-dist` 目录整体随附）。237MB 体积主要来自 onnxruntime + PP-OCR 模型，属 OCR 功能必要成本。
 

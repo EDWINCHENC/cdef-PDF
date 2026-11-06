@@ -5,7 +5,7 @@ for(const locale of ['zh-CN','en-US'])test(`${locale}: keyword markups preview, 
  const app=await electron.launch({args:[root,'--no-sandbox','--user-data-dir='+path.join(root,'tests/results/profile-markups-'+locale+'-'+Date.now())]});
  try{
   const page=await app.firstWindow(),errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
-  await page.waitForSelector('.empty');expect(await page.title()).toBe('OpenPDF Studio');expect(page.url()).toContain('/dist/index.html');
+  await page.waitForSelector('.empty');expect(await page.title()).toBe('CDEF PDF Studio');expect(page.url()).toContain('/dist/index.html');
   await page.evaluate(l=>localStorage.setItem('language',l),locale);await page.reload();
   await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].setContentSize(1280,850));
   const open=async(file:string)=>{await app.evaluate(({dialog},file)=>{dialog.showOpenDialog=async()=>({canceled:false,filePaths:[file]})},file);await page.locator('.quick-actions').getByRole('button',{name:t.open,exact:true}).click();await page.locator('.paper>img').waitFor()};

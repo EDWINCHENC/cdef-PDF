@@ -1,7 +1,7 @@
 # electron-builder 配置：Windows 独立版
 # 产物：NSIS 安装包 + 便携版（x64）
-appId: studio.openpdf.desktop
-productName: OpenPDF Studio
+appId: studio.cdef.pdf
+productName: CDEF PDF Studio
 copyright: 开源项目，与 WPS / 金山公司无隶属关系
 # staging 目录无 node_modules，显式指定 Electron 版本
 electronVersion: 44.10.2
@@ -45,7 +45,7 @@ nsis:
   allowToChangeInstallationDirectory: true
   createDesktopShortcut: true
   createStartMenuShortcut: true
-  shortcutName: OpenPDF Studio
+  shortcutName: CDEF PDF Studio
 
 portable:
   artifactName: ${productName}-${version}-portable.${ext}

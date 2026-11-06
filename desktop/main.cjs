@@ -14,10 +14,10 @@ function startWorker(){
  const packaged=app.isPackaged;
  // 开发模式：项目内 venv 的 Python（Windows 用 Scripts/python.exe，POSIX 用 bin/python）
  const command=packaged
-  ?path.join(process.resourcesPath,'engine',isWin?'openpdf-engine.exe':'openpdf-engine')
+  ?path.join(process.resourcesPath,'engine',isWin?'cdef-pdf-engine.exe':'cdef-pdf-engine')
   :path.join(root,'.venv',isWin?'Scripts':'bin',isWin?'python.exe':'python');
- worker=spawn(command,packaged?[]:[path.join(root,'engine','worker.py')],{env:{...process.env,OPENPDF_OCR:packaged
-  ?path.join(process.resourcesPath,'engine',isWin?'ocr_rapidocr.exe':'ocr_rapidocr')
+ worker=spawn(command,packaged?[]:[path.join(root,'engine','worker.py')],{env:{...process.env,CDEF_PDF_OCR:packaged
+  ?path.join(process.resourcesPath,'engine',isWin?'cdef-pdf-ocr.exe':'cdef-pdf-ocr')
   :path.join(root,'engine','ocr_rapidocr.py')},stdio:['pipe','pipe','pipe']});
  readline.createInterface({input:worker.stdout}).on('line',line=>{try{const r=JSON.parse(line);const p=pending.get(r.id);if(p){pending.delete(r.id);r.error?p.reject(new Error(r.error.code)):p.resolve(r.result);}}catch(e){console.error(e.message);}});
  worker.stderr.on('data',b=>console.error(b.toString()));
@@ -25,7 +25,7 @@ function startWorker(){
 }
 app.whenReady().then(()=>{
  startWorker();
- win=new BrowserWindow({width:1496,height:855,minWidth:980,minHeight:640,title:'OpenPDF Studio',backgroundColor:'#eceef1',webPreferences:{preload:path.join(__dirname,'preload.cjs'),contextIsolation:true,nodeIntegration:false,sandbox:true}});
+ win=new BrowserWindow({width:1496,height:855,minWidth:980,minHeight:640,title:'CDEF PDF Studio',backgroundColor:'#eceef1',webPreferences:{preload:path.join(__dirname,'preload.cjs'),contextIsolation:true,nodeIntegration:false,sandbox:true}});
  // PDF zoom belongs to the viewer, never magnify the menus and sidebars.
  win.webContents.setVisualZoomLevelLimits(1,1);
  win.webContents.setWindowOpenHandler(()=>({action:'deny'}));
@@ -83,7 +83,7 @@ app.whenReady().then(()=>{
  ipcMain.handle('save',async(_e,result)=>{
   if(!result || typeof result.data!=='string' || result.data.length>250*1024*1024)throw new Error('invalidOperation');
   const r=await dialog.showSaveDialog(win,{defaultPath:path.basename(result.name),filters:[{name:result.extension.toUpperCase(),extensions:[result.extension]}]});if(r.canceled)return false;
-  const temp=r.filePath+'.openpdf-'+Date.now()+'.tmp';try{await fs.writeFile(temp,Buffer.from(result.data,'base64'),{flag:'wx'});await fs.rename(temp,r.filePath);}finally{await fs.rm(temp,{force:true});}return true;
+  const temp=r.filePath+'.cdef-pdf-'+Date.now()+'.tmp';try{await fs.writeFile(temp,Buffer.from(result.data,'base64'),{flag:'wx'});await fs.rename(temp,r.filePath);}finally{await fs.rm(temp,{force:true});}return true;
  });
  ipcMain.handle('recovery',async(_e,action,data)=>{
   const file=path.join(app.getPath('userData'),'recovery.json');

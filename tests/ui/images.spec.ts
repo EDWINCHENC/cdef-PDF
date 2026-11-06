@@ -7,7 +7,7 @@ for(const locale of ['zh-CN','en-US'])test(`${locale}: drag, resize, cancel, und
  try{
   const page=await app.firstWindow();page.on('pageerror',e=>errors.push(e.message));page.on('console',e=>{if(e.type()==='error')errors.push(e.text())});
   await page.waitForSelector('.empty');await page.evaluate(l=>localStorage.setItem('language',l),locale);await page.reload();await page.waitForSelector('.empty');
-  await expect(page).toHaveTitle('OpenPDF Studio');
+  await expect(page).toHaveTitle('CDEF PDF Studio');
   await app.evaluate(({dialog},file)=>{dialog.showOpenDialog=async()=>({canceled:false,filePaths:[file]})},path.join(root,'test-fixtures/images.pdf'));
   await page.locator('.empty').getByRole('button',{name:zh?'打开 PDF':'Open PDF',exact:true}).click();
   await page.locator('.ribbon-tabs').getByRole('button',{name:zh?'编辑':'Edit',exact:true}).click();

@@ -32,10 +32,10 @@ for (const name of ['dist', 'desktop', 'src', 'engine', 'tests', 'test-fixtures'
 await fs.writeFile(
   path.join(stage, 'package.json'),
   JSON.stringify({
-    name: 'openpdf-studio-windows',
+    name: 'cdef-pdf-studio',
     version: JSON.parse(await fs.readFile(path.join(root, 'package.json'), 'utf8')).version,
     description: '免费开源 PDF 编辑器｜WPS PDF 交互逆向研究与独立实现｜本地编辑、OCR、PDF 转 Word',
-    author: 'OpenPDF Studio contributors',
+    author: 'CDEF PDF Studio contributors',
     main: 'desktop/main.cjs',
     license: 'AGPL-3.0-or-later',
   }),

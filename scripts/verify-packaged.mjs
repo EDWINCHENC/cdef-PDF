@@ -4,7 +4,7 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 
 const root = process.cwd();
-const appPath = process.argv[2] || path.join(root, 'release/mac-arm64/OpenPDF Studio.app/Contents/MacOS/OpenPDF Studio');
+const appPath = process.argv[2] || path.join(root, 'release/mac-arm64/CDEF PDF Studio.app/Contents/MacOS/CDEF PDF Studio');
 const engineDir = path.join(path.dirname(appPath), '../Resources/engine');
 const fixture = path.join(root, 'test-fixtures/research.pdf');
 
@@ -56,7 +56,7 @@ try {
   if (stat) {
     const { spawn } = await import('node:child_process');
     const { createInterface } = await import('node:readline');
-    const engine = path.join(engineDir, 'openpdf-engine');
+    const engine = path.join(engineDir, 'cdef-pdf-engine');
     const worker = spawn(engine, [], { stdio: ['pipe', 'pipe', 'pipe'] });
     const rl = createInterface({ input: worker.stdout });
     const data = (await fs.readFile(out)).toString('base64');

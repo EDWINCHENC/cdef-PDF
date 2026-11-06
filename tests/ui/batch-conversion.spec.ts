@@ -7,7 +7,7 @@ for(const locale of ['zh-CN','en-US'])test(`${locale}: multi-file conversions, r
  const results:Record<string,string>={};
  try{
  const page=await app.firstWindow();const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
- await page.waitForSelector('.empty');expect(await page.title()).toBe('OpenPDF Studio');expect(page.url()).toContain('/dist/index.html');
+ await page.waitForSelector('.empty');expect(await page.title()).toBe('CDEF PDF Studio');expect(page.url()).toContain('/dist/index.html');
  await page.evaluate(l=>localStorage.setItem('language',l),locale);await page.reload();
  await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].setContentSize(1280,850));
  const choose=async(files:string[])=>{await app.evaluate(({dialog},{files,output})=>{dialog.showOpenDialog=async(_w,options)=>({canceled:false,filePaths:options.properties.includes('openDirectory')?[output]:files})},{files:files.map(f=>path.join(root,'test-fixtures',f)),output});await page.getByRole('button',{name:t.batchChooseFiles,exact:true}).click()};

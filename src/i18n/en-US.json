@@ -1,5 +1,5 @@
 {
-  "appName": "OpenPDF Studio",
+  "appName": "CDEF PDF Studio",
   "home": "Home",
   "edit": "Edit",
   "page": "Page",
@@ -152,8 +152,8 @@
   "editMenu": "Edit",
   "viewMenu": "View",
   "windowMenu": "Window",
-  "quit": "Quit OpenPDF Studio",
-  "hide": "Hide OpenPDF Studio",
+  "quit": "Quit CDEF PDF Studio",
+  "hide": "Hide CDEF PDF Studio",
   "copy": "Copy",
   "paste": "Paste",
   "cut": "Cut",

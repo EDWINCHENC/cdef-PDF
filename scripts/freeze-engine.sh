@@ -26,7 +26,7 @@ echo "==> 检查 PyInstaller"
 echo "==> 冻结引擎（worker.py 入口，含 core + ocr_rapidocr）"
 "$PYTHON" -m PyInstaller \
   --onefile \
-  --name openpdf-engine \
+  --name cdef-pdf-engine \
   --distpath "$OUT" \
   --workpath build/pyinstaller-work \
   --specpath build \
@@ -36,10 +36,10 @@ echo "==> 冻结引擎（worker.py 入口，含 core + ocr_rapidocr）"
   --paths engine \
   engine/worker.py
 
-echo "==> 冻结 OCR 助手（独立二进制，供 OPENPDF_OCR 指向）"
+echo "==> 冻结 OCR 助手（独立二进制，供 CDEF_PDF_OCR 指向）"
 "$PYTHON" -m PyInstaller \
   --onefile \
-  --name ocr_rapidocr \
+  --name cdef-pdf-ocr \
   --distpath "$OUT" \
   --workpath build/pyinstaller-work-ocr \
   --specpath build \

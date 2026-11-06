@@ -101,8 +101,8 @@ def replacement_layout(page,span,text,size,font,validate=True):
 
 def embed(page,font):
     if font=='china-s':
-        page.insert_font(fontname='OpenPDFCJK',fontbuffer=fitz.Font('cjk').buffer)
-        return 'OpenPDFCJK'
+        page.insert_font(fontname='CDEFCJK',fontbuffer=fitz.Font('cjk').buffer)
+        return 'CDEFCJK'
     return font
 
 def replace_simple_object(doc,page,span,text,op):
@@ -208,7 +208,7 @@ def recognize_page(page):
     """Local OCR result becomes an invisible text layer; never alter the scan."""
     if page.rotation:raise EngineError('ocrRotation')
     if page.get_text().strip():raise EngineError('alreadyText')
-    helper=Path(os.environ.get('OPENPDF_OCR',str(Path(__file__).parent/'ocr_rapidocr.py')))
+    helper=Path(os.environ.get('CDEF_PDF_OCR',str(Path(__file__).parent/'ocr_rapidocr.py')))
     if not helper.exists():raise EngineError('ocrUnavailable')
     try:
         with tempfile.TemporaryDirectory() as td:
@@ -496,15 +496,15 @@ class Engine:
                     if changes+len(hits)>2000:raise EngineError('markupLimit')
                     for quad in hits:
                         a={'highlight':p.add_highlight_annot,'underline':p.add_underline_annot,'strikeout':p.add_strikeout_annot}[style](quad)
-                        a.set_colors(stroke=tint);a.set_info(title='OpenPDF Studio',content=op['query'],subject='OpenPDF Studio / keyword markup')
-                        d.xref_set_key(a.xref,'OpenPDFStudio','('+MARKUP_TAG+')');a.set_flags(fitz.PDF_ANNOT_IS_PRINT);a.update(opacity=opacity)
+                        a.set_colors(stroke=tint);a.set_info(title='CDEF PDF Studio',content=op['query'],subject='CDEF PDF Studio / keyword markup')
+                        d.xref_set_key(a.xref,'CDEFPDFStudio','('+MARKUP_TAG+')');a.set_flags(fitz.PDF_ANNOT_IS_PRINT);a.update(opacity=opacity)
                         region(a.rect);changes+=1
                 elif kind=='deleteMarkup':
                     if op.get('revision')!=s.revision:raise EngineError('stalePreview')
                     xref=op.get('xref')
                     if type(xref) is not int or xref not in [a.xref for a in p.annots() or []]:raise EngineError('staleObject')
                     a=p.load_annot(xref)
-                    if d.xref_get_key(xref,'OpenPDFStudio')!=('string',MARKUP_TAG) or a.info.get('id','')!=op.get('id') or a.type[0] not in MARKUP_TYPES.values():raise EngineError('staleObject')
+                    if d.xref_get_key(xref,'CDEFPDFStudio')!=('string',MARKUP_TAG) or a.info.get('id','')!=op.get('id') or a.type[0] not in MARKUP_TYPES.values():raise EngineError('staleObject')
                     region(a.rect);p.delete_annot(a);changes+=1
                 elif kind=='ocr':
                     result=recognize_page(p);warnings.append('ocrReview');changes+=result['lines']
@@ -574,7 +574,7 @@ class Engine:
         with fitz.open(stream=s.data,filetype='pdf') as d:
             for i,p in enumerate(d):
                 for a in p.annots() or []:
-                    if d.xref_get_key(a.xref,'OpenPDFStudio')!=('string',MARKUP_TAG):continue
+                    if d.xref_get_key(a.xref,'CDEFPDFStudio')!=('string',MARKUP_TAG):continue
                     style=next((k for k,v in MARKUP_TYPES.items() if a.type[0]==v),None)
                     if style:rows.append({'page':i,'xref':a.xref,'id':a.info.get('id',''),'text':a.info.get('content',''),'style':style,'rect':list(a.rect)})
         return {'revision':s.revision,'items':rows}

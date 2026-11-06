@@ -30,7 +30,7 @@ class BatchConversion {
   if(this.busy||this.stage)throw new Error('batchBusy');
   if(!this.files.length||!this.destination)throw new Error('batchSelectionRequired');
   this.busy=true;this.cancelled=false;this.completed=0;this.error='';this.failedFile='';this.result='';
-  try{this.stage=await fs.mkdtemp(path.join(this.destination,'.openpdf-batch-'));this.phase='running';if(this.cancelled)await this.discard('cancelled');return this.status()}
+  try{this.stage=await fs.mkdtemp(path.join(this.destination,'.cdef-pdf-batch-'));this.phase='running';if(this.cancelled)await this.discard('cancelled');return this.status()}
   catch(e){await this.fail(e);return this.status()}finally{this.busy=false}
  }
  async discard(phase){if(this.stage){await fs.rm(this.stage,{recursive:true,force:true});this.stage=null}this.phase=phase}
@@ -63,7 +63,7 @@ class BatchConversion {
   this.busy=true;
   try{
    if(this.cancelled){await this.discard('cancelled');return this.status()}
-   const result=path.join(this.destination,'OpenPDF-'+new Date().toISOString().replace(/[:.]/g,'-')+'-'+randomUUID().slice(0,8));
+   const result=path.join(this.destination,'CDEF-PDF-'+new Date().toISOString().replace(/[:.]/g,'-')+'-'+randomUUID().slice(0,8));
    // Unique destination; refuse any existing entry, including symbolic links.
    try{await fs.lstat(result);throw new Error('batchDestinationExists')}catch(e){if(e.code!=='ENOENT')throw e}
    if(this.cancelled){await this.discard('cancelled');return this.status()}

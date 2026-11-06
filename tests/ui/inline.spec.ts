@@ -8,7 +8,7 @@ test('Chinese inline input: automatic navigation/save, IME, retarget, overflow, 
   const page=await app.firstWindow();page.on('pageerror',e=>errors.push(e.message));
   page.on('console',message=>{if(message.type()==='error')errors.push(message.text())});
   await page.waitForSelector('.empty');await page.evaluate(()=>localStorage.setItem('language','zh-CN'));await page.reload();
-  await expect(page).toHaveTitle('OpenPDF Studio');
+  await expect(page).toHaveTitle('CDEF PDF Studio');
   await app.evaluate(({dialog},file)=>{dialog.showOpenDialog=async()=>({canceled:false,filePaths:[file]})},path.join(root,'test-fixtures/research.pdf'));
   await page.locator('.empty').getByRole('button',{name:'打开 PDF',exact:true}).click();
   await page.locator('.ribbon-tabs').getByRole('button',{name:'编辑',exact:true}).click();

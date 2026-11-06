@@ -3,7 +3,7 @@ import { _electron as electron } from '@playwright/test';
 import path from 'node:path';
 
 const root = process.cwd();
-const appPath = process.argv[2] || path.join(root, 'release/mac-arm64/OpenPDF Studio.app/Contents/MacOS/OpenPDF Studio');
+const appPath = process.argv[2] || path.join(root, 'release/mac-arm64/CDEF PDF Studio.app/Contents/MacOS/CDEF PDF Studio');
 
 const app = await electron.launch({
   executablePath: appPath,

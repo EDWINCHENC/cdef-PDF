@@ -7,7 +7,7 @@ test('trackpad pinch zooms the PDF around the pointer and preserves a single-fra
  try{
   const page=await app.firstWindow();page.on('pageerror',e=>errors.push(e.message));page.on('console',e=>{if(e.type()==='error')errors.push(e.text())});
   await page.waitForSelector('.empty');await page.evaluate(()=>localStorage.setItem('language','zh-CN'));await page.reload();await page.waitForSelector('.empty');
-  await expect(page).toHaveTitle('OpenPDF Studio');expect(page.url()).toContain('/dist/index.html');
+  await expect(page).toHaveTitle('CDEF PDF Studio');expect(page.url()).toContain('/dist/index.html');
   await app.evaluate(({dialog},file)=>{dialog.showOpenDialog=async()=>({canceled:false,filePaths:[file]})},path.join(root,'test-fixtures/research.pdf'));
   await page.locator('.empty').getByRole('button',{name:'打开 PDF',exact:true}).click();
   await page.locator('.ribbon-tabs').getByRole('button',{name:'编辑',exact:true}).click();

@@ -36,7 +36,7 @@ export default function PageManager({doc,currentPage,onClose,onApply,onExport}:{
  const dragStart=(index:number,e:DragEvent<HTMLButtonElement>)=>{
   if(busy||!valid){e.preventDefault();return}
   const moving=selected.includes(index)?selected:[index];if(!selected.includes(index))choose(moving);
-  drag.current=moving;e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('application/x-openpdf-pages',JSON.stringify(moving));
+  drag.current=moving;e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('application/x-cdef-pdf-pages',JSON.stringify(moving));
  };
  const dragOver=(e:DragEvent<HTMLElement>,at:number)=>{
   if(!drag.current||busy)return;e.preventDefault();e.stopPropagation();e.dataTransfer.dropEffect='move';setGap(at);

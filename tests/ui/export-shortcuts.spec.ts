@@ -7,7 +7,7 @@ for(const locale of ['zh-CN','en-US'])test(`${locale}: format shortcuts save onc
  const app=await electron.launch({args:[root,'--no-sandbox','--user-data-dir='+path.join(output,'profile-'+Date.now())]});
  try{
   const page=await app.firstWindow(),errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
-  await page.waitForSelector('.empty');await expect(page).toHaveTitle('OpenPDF Studio');expect(page.url()).toContain('/dist/index.html');
+  await page.waitForSelector('.empty');await expect(page).toHaveTitle('CDEF PDF Studio');expect(page.url()).toContain('/dist/index.html');
   await page.evaluate(l=>localStorage.setItem('language',l),locale);await page.reload();
   const button=(k:string)=>page.getByRole('button',{name:t[k],exact:true});
   const tab=(k:string)=>page.locator('.ribbon-tabs').getByRole('button',{name:t[k],exact:true});

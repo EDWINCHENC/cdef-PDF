@@ -5,7 +5,7 @@ for(const locale of ['zh-CN','en-US'])test(`${locale}: direct operations and sin
  const app=await electron.launch({args:[root,'--no-sandbox','--user-data-dir='+path.join(root,'tests/results/profile-minimal-'+locale+'-'+Date.now())]});
  try{
   const page=await app.firstWindow(),errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
-  await page.waitForSelector('.empty');await expect(page).toHaveTitle('OpenPDF Studio');expect(page.url()).toContain('/dist/index.html');
+  await page.waitForSelector('.empty');await expect(page).toHaveTitle('CDEF PDF Studio');expect(page.url()).toContain('/dist/index.html');
   await page.evaluate(l=>localStorage.setItem('language',l),locale);await page.reload();
   const button=(key:string)=>page.getByRole('button',{name:t[key],exact:true});
   const choose=async(file:string)=>app.evaluate(({dialog},file)=>{dialog.showOpenDialog=async()=>({canceled:false,filePaths:[file]})},path.join(root,'test-fixtures',file));

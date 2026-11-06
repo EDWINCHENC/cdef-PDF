@@ -6,11 +6,11 @@
 
 | # | 决策 | 当前值 | 影响面 |
 |---|---|---|---|
-| D5 | **产品命名** | 临时名 `OpenPDF Studio`（包名 `openpdf-studio-windows`） | package.json / electron-builder.yml 的 productName / index.html 标题 / i18n 的 appName / 应用图标说明 |
+| D5 | **产品命名** | 临时名 `CDEF PDF Studio`（包名 `cdef-pdf-studio`） | package.json / electron-builder.yml 的 productName / index.html 标题 / i18n 的 appName / 应用图标说明 |
 | D2 | 渲染引擎 | PyMuPDF（已定） | — |
 | D4 | 分发形态 | NSIS 安装包 + 便携版（已定） | electron-builder.yml |
 
-**改名操作**（确定 D5 后）：全局替换 `OpenPDF Studio` → 新名称（package.json、
+**改名操作**（确定 D5 后）：全局替换 `CDEF PDF Studio` → 新名称（package.json、
 electron-builder.yml `productName`、index.html `<title>`、src/i18n/*.json 的 `appName`、
 scripts/ 与 .github/ 中的展示名），重新 `npm run build` 并提交。
 
@@ -39,14 +39,14 @@ CI（`.github/workflows/build-windows.yml`）自动执行三个 job，**任一�
 | package | 运行时安全门控 → PyInstaller 冻结引擎 → Vite 构建 → electron-builder（NSIS + portable） | 构建成功 |
 
 产物（`windows-installer` artifact）：
-- `OpenPDF Studio-0.1.0-x64.exe`（NSIS 安装包）
-- `OpenPDF Studio-0.1.0-portable.exe`（便携版）
+- `CDEF PDF Studio-0.1.0-x64.exe`（NSIS 安装包）
+- `CDEF PDF Studio-0.1.0-portable.exe`（便携版）
 
 ### 已验证：打包流水线可跨平台执行
 
 **electron-builder 能从 macOS 直接构建 Windows 目标**（已实测产出 PE32+ 安装包+便携版，
 NSIS 配置/图标转换/asar 结构全部正确）。唯一无法交叉的是 PyInstaller 引擎冻结
-（`openpdf-engine.exe` / `ocr_rapidocr.exe` 必须在 Windows 上产出）。
+（`cdef-pdf-engine.exe` / `cdef-pdf-ocr.exe` 必须在 Windows 上产出）。
 
 因此除 CI 外还有一条混合路径：
 

@@ -3,7 +3,7 @@ import path from 'node:path';import fs from 'node:fs/promises';
 for(const locale of ['zh-CN','en-US'])test(`${locale}: drag selected pages, cancel, apply, save and undo`,async()=>{
  const root=path.resolve('.'),zh=locale==='zh-CN';const app=await electron.launch({args:[root,'--no-sandbox','--user-data-dir='+path.join(root,'tests/results/profile-order-'+locale+'-'+Date.now())]});const errors:string[]=[];
  try{
-  const page=await app.firstWindow();page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});await expect(page).toHaveTitle('OpenPDF Studio');await page.waitForSelector('.empty');
+  const page=await app.firstWindow();page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});await expect(page).toHaveTitle('CDEF PDF Studio');await page.waitForSelector('.empty');
   await page.evaluate(l=>localStorage.setItem('language',l),locale);await page.reload();await page.waitForSelector('.empty');
   await app.evaluate(({dialog},file)=>{dialog.showOpenDialog=async()=>({canceled:false,filePaths:[file]})},path.join(root,'test-fixtures/page-order.pdf'));
   await page.locator('.empty').getByRole('button',{name:zh?'打开 PDF':'Open PDF',exact:true}).click();await expect(page.locator('.paper>img')).toBeVisible();

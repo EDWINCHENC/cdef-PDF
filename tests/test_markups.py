@@ -31,7 +31,7 @@ def test_highlight_cjk_rotation_crop_and_external_annotations(document):
   assert d[4].get_pixmap().samples==f.open(stream=before,filetype='pdf')[4].get_pixmap().samples
  out=base64.b64decode(e.export(sid)['data']);Path('tests/results/keyword-markups.pdf').write_bytes(out)
  r=PdfReader(io.BytesIO(out));assert len(r.pages)==5
- tagged=[a.get_object() for pg in r.pages for a in pg.get('/Annots',[]) if a.get_object().get('/OpenPDFStudio')=='keyword-markup-v1']
+ tagged=[a.get_object() for pg in r.pages for a in pg.get('/Annots',[]) if a.get_object().get('/CDEFPDFStudio')=='keyword-markup-v1']
  assert len(tagged)==8;assert all(a['/Subtype']=='/Highlight' and len(a['/QuadPoints'])==8 and a['/Contents']=='合同' for a in tagged)
  reopened=e.open(b64(out));assert len(e.markups(reopened['id'])['items'])==8
  e.history(sid,'undo');assert e.session(sid).data==before;e.history(sid,'redo');assert e.session(sid).data==after
