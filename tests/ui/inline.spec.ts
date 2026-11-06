@@ -1,6 +1,7 @@
 import {test,expect,_electron as electron} from '@playwright/test';
 import path from 'node:path';import fs from 'node:fs/promises';
 
+const SAVE_KEY = process.platform === 'darwin' ? 'Meta+s' : 'Control+s';
 test('Chinese inline input: automatic navigation/save, IME, retarget, overflow, properties and undo',async()=>{
  const root=path.resolve('.');const app=await electron.launch({args:[root,'--no-sandbox','--user-data-dir='+path.join(root,'tests/results/profile-inline-'+Date.now())]});
  const errors:string[]=[];
@@ -63,7 +64,7 @@ test('Chinese inline input: automatic navigation/save, IME, retarget, overflow, 
   const out=path.join(root,'tests/results/inline-autosave.pdf');await fs.rm(out,{force:true});
   await app.evaluate(({dialog},file)=>{dialog.showSaveDialog=async()=>({canceled:false,filePath:file})},out);
   // Command-S while the textarea owns focus must flush before exporting.
-  await input.press('Meta+s');
+  await input.press(SAVE_KEY);
   await expect.poll(async()=>!!(await fs.stat(out).catch(()=>null))).toBe(true);
   await expect(page.locator('.dirty-dot')).toHaveCount(0);
   const savedBytes=await fs.readFile(out,'base64');

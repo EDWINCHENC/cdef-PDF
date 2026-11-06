@@ -2,6 +2,7 @@ import {venvPython} from './venv-python';
 import {test,expect,_electron as electron} from '@playwright/test';
 import fs from 'node:fs/promises';import path from 'node:path';import {execFileSync} from 'node:child_process';
 
+const SAVE_KEY = process.platform === 'darwin' ? 'Meta+s' : 'Control+s';
 for(const locale of ['zh-CN','en-US'])test(`${locale}: place new text by mouse, grow, auto-save, cancel and undo`,async()=>{
  const root=path.resolve('.'),dir=path.join(root,'tests/results/placement-'+locale);await fs.mkdir(dir,{recursive:true});
  const file=path.join(dir,'blank.pdf');execFileSync(venvPython(root),['-c','import pymupdf as f,sys;d=f.open();d.new_page(width=600,height=800);d.new_page(width=600,height=800);d.save(sys.argv[1])',file]);
@@ -24,7 +25,7 @@ for(const locale of ['zh-CN','en-US'])test(`${locale}: place new text by mouse, 
   await page.getByRole('slider',{name:t.zoom,exact:true}).fill('1');await expect(input()).toHaveValue('鼠标放置文字 Mouse placement grows across the page');
   await page.screenshot({path:path.join(dir,'typing.png')});
   const out=path.join(dir,'saved.pdf');await fs.rm(out,{force:true});await app.evaluate(({dialog},out)=>{dialog.showSaveDialog=async()=>({canceled:false,filePath:out})},out);
-  await input().press('Meta+s');await expect.poll(async()=>!!await fs.stat(out).catch(()=>null)).toBe(true);await expect(input()).toHaveCount(0);await expect(page.locator('.dirty-dot')).toHaveCount(0);
+  await input().press(SAVE_KEY);await expect.poll(async()=>!!await fs.stat(out).catch(()=>null)).toBe(true);await expect(input()).toHaveCount(0);await expect(page.locator('.dirty-dot')).toHaveCount(0);
   const data=await fs.readFile(out,'base64');const readback=await page.evaluate(async data=>{const d=await window.studio.rpc('open',{data,name:'reopened.pdf'});try{return await window.studio.rpc('objects',{sid:d.id,page:0})}finally{await window.studio.rpc('close',{sid:d.id})}},data);
   const span=readback.texts.find((x:any)=>x.text.includes('Mouse placement'));expect(span).toBeTruthy();expect(span.viewRect[0]).toBeCloseTo(100,0);expect(Math.abs(span.viewRect[1]-160)).toBeLessThan(4);
   await button('undo').click();await expect(page.locator('.text-object')).toHaveCount(0);await button('redo').click();await expect(page.locator('.text-object')).not.toHaveCount(0);

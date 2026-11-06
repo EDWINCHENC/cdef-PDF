@@ -1,6 +1,7 @@
 import {venvPython} from './venv-python';
 import {test,expect,_electron as electron} from '@playwright/test';
 import fs from 'node:fs/promises';import path from 'node:path';import {execFileSync} from 'node:child_process';
+const SAVE_KEY = process.platform === 'darwin' ? 'Meta+s' : 'Control+s';
 for(const locale of ['zh-CN','en-US'])test(`${locale}: reading caret activates editing only when text changes`,async()=>{
  const root=path.resolve('.'),dir=path.join(root,'tests/results/type-to-edit-'+locale);await fs.mkdir(dir,{recursive:true});
  const t=JSON.parse(await fs.readFile(`src/i18n/${locale}.json`,'utf8'));
@@ -22,8 +23,8 @@ for(const locale of ['zh-CN','en-US'])test(`${locale}: reading caret activates e
   await expect(page.locator('dialog')).toHaveCount(0);await expect(button('undo')).toBeDisabled();
   await page.screenshot({path:path.join(dir,'typing-edit.png')});
   const output=path.join(dir,'saved.pdf');await fs.rm(output,{force:true});await app.evaluate(({dialog},file)=>{dialog.showSaveDialog=async()=>({canceled:false,filePath:file})},output);
-  await input.press('Meta+s');await expect.poll(async()=>!!await fs.stat(output).catch(()=>null)).toBe(true);await expect(input).toHaveCount(0);await expect(button('undo')).toBeEnabled();
-  const readback=execFileSync(venvPython(root),['-c','from pypdf import PdfReader;import sys;print(PdfReader(sys.argv[1]).pages[0].extract_text())',output],{encoding:'utf8'});expect(readback).toContain(edited);
+  await input.press(SAVE_KEY);await expect.poll(async()=>!!await fs.stat(output).catch(()=>null)).toBe(true);await expect(input).toHaveCount(0);await expect(button('undo')).toBeEnabled();
+  const readback=execFileSync(venvPython(root),['-c','from pypdf import PdfReader;import sys;print(PdfReader(sys.argv[1]).pages[0].extract_text())',output],{encoding:'utf8',env:{...process.env,PYTHONIOENCODING:'utf-8'}});expect(readback).toContain(edited);
   await button('undo').click();await expect(page.getByRole('button',{name:t.editText+': '+original,exact:true})).toBeVisible();
   await tab('home').click();await span.click();await input.press('Escape');await expect(tab('home')).toHaveClass('selected');await expect(input).toHaveCount(0);
   // Typing elsewhere must not switch to the text editor or touch the document.
