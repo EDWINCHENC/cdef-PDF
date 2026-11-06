@@ -70,3 +70,16 @@ evidence/            RE 证据存档（不随包分发）
 装饰/历史保存/转换/批量/AI——**全部对齐**。唯一两处差异即项目目标本身：
 OCR（Apple Vision → RapidOCR，跨平台）与目标平台（macOS .app → Windows NSIS+portable）。
 经验证据：128 项测试全部继承自参考项目并在本移植上通过。
+
+## 🎉 Windows 安装包已交付（2026-11-06）
+
+CI Run 42189506102 三 job 全绿：
+test（86 引擎 + 15 平台 + UI 构建）✅ / ui-test（27 UI）✅ / package（13 步）✅
+
+产物（660.8 MB）：`CDEF PDF Studio-0.1.0-x64.exe`（NSIS 安装包）+
+`CDEF PDF Studio-0.1.0-portable.exe`（便携版），存放于仓库 Actions → Artifacts
+（windows-installer，90 天有效）。
+
+Windows 平台适配共修复 7 类问题（macOS 无法暴露）：cp1252 编码 ×4 处
+（OCR 助手/stdout/stdin/测试读取）、venv 路径、Meta 快捷键、npx spawn、
+批处理取消竞态。全部有本地 cp1252 模拟回归覆盖。
