@@ -47,6 +47,10 @@ sudo chown -R chen /opt/homebrew     # 修 Homebrew（若想用 brew）
 `node scripts/package-win.mjs mac`（接受平台参数，默认 win）完整跑通，并**端到端验证打包应用**：
 窗口渲染 → 打开 PDF（3 页缩略图）→ 页内编辑 → 保存 → 引擎读回验证编辑生效 → 无页面错误。
 
+**Windows 目标交叉构建已实测**：`node scripts/package-win.mjs`（默认 win）在 macOS 上成功产出
+`OpenPDF Studio-0.1.0-x64.exe`（NSIS 安装包，PE32+）+ portable.exe，图标嵌入 exe、
+asar 含 source/（98 条目）。唯一无法交叉的环节是 PyInstaller 引擎冻结（需 Windows 产出 .exe）。
+
 排雷记录（三个都会导致 Windows 交付物故障的坑）：
 
 | 坑 | 现象 | 修复 |

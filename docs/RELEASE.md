@@ -42,6 +42,24 @@ CI（`.github/workflows/build-windows.yml`）自动执行三个 job，**任一�
 - `OpenPDF Studio-0.1.0-x64.exe`（NSIS 安装包）
 - `OpenPDF Studio-0.1.0-portable.exe`（便携版）
 
+### 已验证：打包流水线可跨平台执行
+
+**electron-builder 能从 macOS 直接构建 Windows 目标**（已实测产出 PE32+ 安装包+便携版，
+NSIS 配置/图标转换/asar 结构全部正确）。唯一无法交叉的是 PyInstaller 引擎冻结
+（`openpdf-engine.exe` / `ocr_rapidocr.exe` 必须在 Windows 上产出）。
+
+因此除 CI 外还有一条混合路径：
+
+```sh
+# 1. 在任意 Windows 机器（或一次性 CI job）冻结引擎
+npm run engine:freeze
+# 2. 将 build/engine-dist/*.exe 拷回本仓库 build/engine-dist/（覆盖 macOS 产物）
+# 3. 在 macOS 上直接交叉构建完整 Windows 包
+node scripts/package-win.mjs          # 产物在 build/staging-win/release/
+```
+
+⚠️ 未执行步骤 1-2 时，交叉构建产出的 .exe 内是 macOS 引擎二进制，**不可分发**。
+
 ## 四、本地 Windows 构建（无 CI 时的备选）
 
 在 Windows 机器上（需 Node ≥ 22.23.4 或 24.x、Python 3.12）：
