@@ -41,6 +41,16 @@ await fs.writeFile(
   }),
 );
 
+// 应用图标必须进暂存目录：electron-builder.yml 的 icon 指向 build/icon.png，
+// 缺失时 electron-builder 静默回退默认 Electron 图标（v0.1.0/v0.1.1 实测踩坑）。
+try {
+  await fs.cp(path.join(root, 'build', 'icon.png'), path.join(stage, 'build', 'icon.png'), { recursive: true });
+  console.log('==> 应用图标已暂存（build/icon.png）');
+} catch (e) {
+  if (e.code !== 'ENOENT') throw e;
+  console.warn('⚠️  未找到 build/icon.png —— exe 将使用默认 Electron 图标');
+}
+
 // source/ 目录：打包态 main.cjs 从这里读取 src/i18n/*.json 构建原生菜单；
 // 同时履行 AGPL-3.0 的随附源码出示义务。缺失会导致 set-locale 崩溃、应用白屏。
 const source = path.join(stage, 'source');
