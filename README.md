@@ -10,8 +10,8 @@
 |---|---|
 | Phase 1 研究与设计 | ✅ 静态研究完成（[research/wps-pdf-reverse-engineering.md](research/wps-pdf-reverse-engineering.md)）；UI 观察待 macOS 权限授权 |
 | Phase 2 引擎层 | ✅ **完成**：86/86 测试通过，OCR 跨平台移植（RapidOCR），转换链全格式验证 |
-| Phase 3 UI 层 | ✅ **移植与验证完成**：TS 零错误构建、Electron 整栈冒烟通过、IPC 契约验证、桌面测试 8/8；待真机 Windows 回归 |
-| Phase 4 打包交付 | ✅ **冻结架构验证通过**（冻结引擎+OCR 端到端正常）；CI 流水线就绪；推 tag 即出 Windows 安装包 |
+| Phase 3 UI 层 | ✅ **测试全过**：TS 零错误构建、整栈冒烟、IPC 契约、桌面测试 8/8、**Playwright UI 套件 27/27**；待真机 Windows 回归 |
+| Phase 4 打包交付 | ✅ **冻结架构验证通过**（冻结引擎+OCR 端到端正常）；electron-builder macOS dry-run 产出 .app+zip（DMG 被沙幕阻挡，已配置跳过）；CI 流水线就绪；推 tag 即出 Windows 安装包 |
 
 **已验证可运行**：本机 macOS 上 `env -u ELECTRON_RUN_AS_NODE electron . --no-sandbox` 可启动完整应用（主进程 + Python 引擎 + UI）。
 **Windows 交付路径**：推送 `v*` tag → GitHub Actions 自动完成 测试 → PyInstaller 冻结 → electron-builder（NSIS + portable）→ 产物上传。
