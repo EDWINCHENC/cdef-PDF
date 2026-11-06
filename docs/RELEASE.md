@@ -79,6 +79,12 @@ npm run package           # 安全门控 + electron-builder → release/
 
 ## 五、真机验收清单（Windows）
 
+> **Windows 运行时分发依赖提示**：PyMuPDF/onnxruntime 的 wheel 通常已随附所需 VC 运行时
+> （delvewheel/auditwheel 打包），绝大多数 Windows 10/11 可直接运行。若真机出现
+> "缺少 vcruntime140.dll" 类错误，需在安装包中加挂 VC++ 2015-2022 可再发行组件
+> （nsis 配置的 `include` 或 electron-builder 的 `win.verifyUpdateCodeSignature` 无关，
+> 参考 electron-builder 文档的 custom NSIS include 方案）。
+
 CI 产出安装包后，在真实 Windows 环境逐项验证：
 
 - [ ] 安装包安装/卸载干净，开始菜单与桌面快捷方式正常

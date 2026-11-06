@@ -46,6 +46,10 @@ nsis:
   createDesktopShortcut: true
   createStartMenuShortcut: true
   shortcutName: CDEF PDF Studio
+  # 安装过程展示 AGPL 许可（分发合规）
+  license: LICENSE
+  # 卸载时保留用户数据（恢复文件在 userData，由应用内清理入口管理）
+  deleteAppDataOnUninstall: false
 
 portable:
   artifactName: ${productName}-${version}-portable.${ext}
