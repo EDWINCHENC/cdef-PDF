@@ -82,3 +82,11 @@ PYINSTALLER_CONFIG_DIR=/tmp/pyinstaller-config bash scripts/freeze-engine.sh
 - 本机默认 `node` 为 22.22.3（PATH 中另有 ~/.local/bin/node 24.22.0）
 - 引擎冻结与 electron-builder 建议用 24.x；Electron 44 内置 Node 24.22.0
 - Windows 构建机需 Node ≥ 20.19（Vite 7 要求）
+
+## CI package job 本地模拟（2026-11-06）
+
+按 `.github/workflows/build-windows.yml` 的 package job 精确顺序在本地完整跑通：
+依赖安装 → `npm run engine:freeze`（cdef-pdf-engine + cdef-pdf-ocr）→ `npm ci`（lock 校验通过）
+→ `npm run build` → 打包 → 产物 `CDEF PDF Studio-0.1.0-x64.exe`（356MB）+ portable（315MB）+ blockmap。
+仅两处环境差异：venv 用 uv 创建（CI 用 python -m venv）；Node 版本门控本机不满足（CI Node 24 满足，
+门控逻辑另有 2 项单测覆盖）。结论：CI 推送后可按预期出包。
