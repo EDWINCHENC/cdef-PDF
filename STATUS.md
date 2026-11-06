@@ -63,3 +63,10 @@ tests/               128 项测试          scripts/           冻结/打包/验
 reference-openpdf-studio/  参考项目（AGPL-3.0 方法论来源）
 evidence/            RE 证据存档（不随包分发）
 ```
+
+## 功能对齐核查（2026-11-06）
+
+对照参考项目 docs/features.md 的 12 个功能域逐一核查：界面/阅读/文字/图片/页面/标注/
+装饰/历史保存/转换/批量/AI——**全部对齐**。唯一两处差异即项目目标本身：
+OCR（Apple Vision → RapidOCR，跨平台）与目标平台（macOS .app → Windows NSIS+portable）。
+经验证据：128 项测试全部继承自参考项目并在本移植上通过。
