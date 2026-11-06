@@ -53,7 +53,7 @@ jobs:
       - name: Playwright UI 测试（27 项，中英双语）
         env:
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
-        run: npx playwright test tests/ui/diagnose.spec.ts --reporter=line
+        run: npx playwright test --reporter=line
 
   package:
     needs: [test, ui-test]
