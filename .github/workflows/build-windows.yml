@@ -72,6 +72,8 @@ jobs:
           .venv/Scripts/python -m pip install -r engine-requirements.txt pyinstaller
       - name: 冻结引擎（Windows .exe）
         run: npm run engine:freeze
+      - name: 验证实际冻结引擎的扫描件转 Word
+        run: .venv/Scripts/python scripts/verify-conversion-engine.py --engine build/engine-dist/cdef-pdf-engine.exe --ocr build/engine-dist/cdef-pdf-ocr.exe
       - name: 安装前端依赖并构建
         run: |
           npm ci

@@ -45,9 +45,7 @@ class BatchConversion {
    try{const s=await handle.stat();if(s.size!==file.size||s.mtimeMs!==file.mtime||s.ino!==file.ino||s.dev!==file.dev)throw new Error('batchSourceChanged');raw=await handle.readFile();const end=await handle.stat();if(end.size!==s.size||end.mtimeMs!==s.mtimeMs)throw new Error('batchSourceChanged')}finally{await handle.close()}
    if(this.cancelled){await this.discard('cancelled');return this.status()}
    const d=await this.call('open',{data:raw.toString('base64'),name:file.name});sid=d.id;
-   if(['docx','xlsx','txt'].includes(this.format)){
-    const info=await this.call('conversion_info',{sid});if(info.imageOnlyPages>0)throw new Error('batchNeedsOcr');
-   }
+   // Text formats share the engine's automatic OCR and empty-content guard.
    if(this.cancelled){await this.discard('cancelled');return this.status()}
    const result=await this.call('export',{sid,format:this.format});
    if(this.cancelled){await this.discard('cancelled');return this.status()}
