@@ -10,7 +10,7 @@ for(const locale of ['zh-CN','en-US'])test(`${locale}: multi-file conversions, r
  await page.waitForSelector('.empty');expect(await page.title()).toBe('CDEF PDF Studio');expect(page.url()).toContain('/dist/index.html');
  await page.evaluate(l=>localStorage.setItem('language',l),locale);await page.reload();
  await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].setContentSize(1280,850));
- const choose=async(files:string[])=>{await app.evaluate(({dialog},{files,output})=>{dialog.showOpenDialog=async(_w,options)=>({canceled:false,filePaths:options.properties.includes('openDirectory')?[output]:files})},{files:files.map(f=>path.join(root,'test-fixtures',f)),output});await page.getByRole('button',{name:t.batchChooseFiles,exact:true}).click()};
+ const choose=async(files:string[])=>{await app.evaluate(({dialog},{files,output})=>{dialog.showOpenDialog=async(_w,options)=>({canceled:false,filePaths:options.properties.includes('openDirectory')?[output]:files})},{files:files.map(f=>path.isAbsolute(f)?f:path.join(root,'test-fixtures',f)),output});await page.getByRole('button',{name:t.batchChooseFiles,exact:true}).click()};
  await page.locator('.ribbon-tabs').getByRole('button',{name:t.batch,exact:true}).click();await page.getByRole('button',{name:t.batchConvert,exact:true}).click();
  await expect(page.getByRole('button',{name:t.batchStart,exact:true})).toBeDisabled();
  await choose(['research.pdf','page-order.pdf']);await page.getByRole('button',{name:t.batchChooseFolder,exact:true}).click();await expect(page.locator('[data-batch-file]')).toHaveCount(2);
@@ -23,9 +23,10 @@ for(const locale of ['zh-CN','en-US'])test(`${locale}: multi-file conversions, r
  // 在 CI 快机上会让整批先完成，取消竞态失败（上一轮 run 实测 flaky）。
  await page.evaluate(()=>(window as any).studio.batch('cancel'));
  await expect(page.getByText(t.batchCancelled,{exact:true})).toBeVisible();expect(await fs.readdir(output)).toEqual([]);
- // The second source needs OCR; the first output must be rolled back as well.
- await choose(['research.pdf','ocr-batch.pdf']);await format.selectOption('txt');await page.getByRole('button',{name:t.batchStart,exact:true}).click();
- await expect(page.locator('dialog [role=alert]')).toContainText(t['error.batchNeedsOcr']);expect(await fs.readdir(output)).toEqual([]);
+ // A later invalid source must roll back the already converted first file.
+ const invalid=path.join(root,'tests/results','invalid-conversion-'+locale+'-'+Date.now()+'.pdf');await fs.writeFile(invalid,'not a PDF');
+ await choose(['research.pdf',invalid]);await format.selectOption('txt');await page.getByRole('button',{name:t.batchStart,exact:true}).click();
+ await expect(page.locator('dialog [role=alert]')).toContainText(t['error.invalidPdf']);expect(await fs.readdir(output)).toEqual([]);
  await choose(['research.pdf','page-order.pdf']);
  for(const kind of zh?['txt','docx','xlsx','pptx','png']:['txt']){
   await format.selectOption(kind);await page.getByRole('button',{name:t.batchStart,exact:true}).click();

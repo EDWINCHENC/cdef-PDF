@@ -6,6 +6,8 @@
 
 ## 当前进度（2026-11-06）
 
+**2026-11-18 更新：0.1.3 源码已修复扫描件转 Word 空白、OCR 坐标错误及混合页漏识别。** Word/Excel/TXT 导出会自动执行本地 OCR；识别失败或正文为空时不会生成空白文件。Word 仍是文字版，不重建扫描表格和原排版。Windows 旧版 0.1.2 不含修复，新安装包尚待构建与真机验收。下表为历史交付记录，不代表新版安装包已验证。
+
 | 阶段 | 状态 |
 |---|---|
 | Phase 1 研究与设计 | ✅ 静态研究完成（[research/wps-pdf-reverse-engineering.md](research/wps-pdf-reverse-engineering.md)）；UI 观察待 macOS 权限授权 |

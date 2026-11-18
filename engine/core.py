@@ -204,35 +204,78 @@ def diff_report(before,after,regions,structural=False,alpha=False):
                 rows.append({'page':i,'changed':True,'bounds':list(box),'structural':structural,'outsideRegionChanged':unexpected,'outsideMaxChannelDelta':outside_max,'outsideExact':outside_max==0})
         return rows
 
-def recognize_page(page):
-    """Local OCR result becomes an invisible text layer; never alter the scan."""
-    if page.rotation:raise EngineError('ocrRotation')
-    if page.get_text().strip():raise EngineError('alreadyText')
+def recognize_lines(page):
+    """Read OCR boxes in displayed page coordinates, without modifying the PDF."""
     helper=Path(os.environ.get('CDEF_PDF_OCR',str(Path(__file__).parent/'ocr_rapidocr.py')))
     if not helper.exists():raise EngineError('ocrUnavailable')
     try:
         with tempfile.TemporaryDirectory() as td:
             path=Path(td)/'page.png';path.write_bytes(png(page,2))
             command=[sys.executable,str(helper),str(path)] if helper.suffix=='.py' else [str(helper),str(path)]
-            result=subprocess.run(command,capture_output=True,text=True,timeout=300,encoding='utf-8',errors='replace')
+            result=subprocess.run(command,capture_output=True,text=True,timeout=300,encoding='utf-8',errors='replace',
+                                  creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0) if sys.platform=='win32' else 0)
         if result.returncode:raise EngineError('ocrFailed')
         lines=json.loads(result.stdout)
         if not isinstance(lines,list):raise ValueError()
-        texts=[];low=0
+        rows=[]
         for item in lines:
             text=item['text'];x,y,w,h=item['rect'];confidence=float(item.get('confidence',1))
             if not isinstance(text,str) or any(not math.isfinite(v) for v in [x,y,w,h,confidence]) or not (0<=x<=1 and 0<=y<=1 and 0<w<=1 and 0<h<=1 and x+w<=1.001 and y+h<=1.001):raise ValueError()
             if not text.strip():continue
             r=fitz.Rect(x*page.rect.width,(1-y-h)*page.rect.height,(x+w)*page.rect.width,(1-y)*page.rect.height)
-            size=max(1,r.height*.8);font=font_for(text);metric=fitz.Font('cjk' if font=='china-s' else font)
-            width=metric.text_length(text,fontsize=size)
-            if width>r.width:size*=r.width/width
-            page.insert_text((r.x0,r.y1-r.height*.15),text,fontname=embed(page,font),fontsize=size,render_mode=3)
-            texts.append(text);low+=confidence<.8
-        return {'lines':len(texts),'lowConfidence':low,'sample':'\n'.join(texts[:3])[:360]}
+            rows.append({'text':text.strip(),'rect':r,'confidence':confidence})
+        return sorted(rows,key=lambda row:(row['rect'].y0,row['rect'].x0))
     except subprocess.TimeoutExpired:raise EngineError('ocrTimeout')
     except EngineError:raise
     except (ValueError,KeyError,TypeError,OSError):raise EngineError('ocrFailed')
+
+def recognize_page(page):
+    """Local OCR result becomes an invisible text layer; never alter the scan."""
+    if page.rotation:raise EngineError('ocrRotation')
+    if page.get_text().strip():raise EngineError('alreadyText')
+    rows=recognize_lines(page)
+    for row in rows:
+        text,r=row['text'],row['rect']
+        font=font_for(text);metric=fitz.Font('cjk' if font=='china-s' else font)
+        size=max(1,r.height/(metric.ascender-metric.descender))
+        width=metric.text_length(text,fontsize=size)
+        if width<=0:continue
+        origin=fitz.Point(r.x0,r.y0+size*metric.ascender)
+        page.insert_text(origin,text,fontname=embed(page,font),fontsize=size,render_mode=3,
+                         morph=(origin,fitz.Matrix(r.width/width,1)))
+    return {'lines':len(rows),'lowConfidence':sum(row['confidence']<.8 for row in rows),
+            'sample':'\n'.join(row['text'] for row in rows[:3])[:360]}
+
+def export_page_text(page):
+    """OCR scans and mixed pages for text exports; never change session/history.
+
+    Existing invisible OCR layers may have incomplete or incorrect coordinates.
+    Re-read substantial scan images, retaining only visible native text to avoid
+    exporting a stale hidden layer or duplicating native page numbers.
+    """
+    text=page.get_text(sort=True)
+    area=page.rect.get_area()
+    images=[fitz.Rect(item['bbox'])*page.rotation_matrix for item in page.get_image_info()]
+    substantial=[r & page.rect for r in images if r.width>=36 and r.height>=36 and (r & page.rect).get_area()>=area*.02]
+    if not substantial and (text.strip() or (not images and not page.get_drawings())):return text
+    native=[]
+    for span in page.get_texttrace():
+        if span['type']==3:continue
+        value=''.join(chr(c[0]) for c in span['chars']).strip()
+        if value:native.append({'text':value,'rect':fitz.Rect(span['bbox'])*page.rotation_matrix})
+    recognized=recognize_lines(page)
+    added=[]
+    for row in recognized:
+        rect=row['rect']
+        if any((rect & n['rect']).get_area()>=rect.get_area()*.6 for n in native):continue
+        added.append(row)
+    # A full-page scan with only a native footer must not appear successful when
+    # OCR recognized that footer but none of the scanned document body.
+    dominant=any(r.get_area()>=area*.5 for r in substantial)
+    if not added and (not native or (dominant and len(native)<3 and sum(len(n['text']) for n in native)<100)):
+        raise EngineError('conversionNoText')
+    rows=sorted([*native,*added],key=lambda row:(round(row['rect'].y0/3),row['rect'].x0))
+    return '\n'.join(row['text'] for row in rows)
 
 @dataclass
 class Session:
@@ -587,11 +630,15 @@ class Engine:
         d=fitz.open(stream=s.data,filetype='pdf')
         try:
             if pages is not None:
-                if not pages or any(not isinstance(x,int) or x<0 or x>=len(d) for x in pages):raise EngineError('invalidPage')
+                if not isinstance(pages,list) or not pages or any(type(x) is not int or x<0 or x>=len(d) for x in pages):raise EngineError('invalidPage')
                 d.select(pages)
+            page_texts=[]
+            if format in ['docx','xlsx','txt']:
+                page_texts=[export_page_text(p) for p in d]
+                if not any(text.strip() for text in page_texts):raise EngineError('conversionNoText')
             out=io.BytesIO();ext=format
             if format=='pdf':data=d.tobytes(garbage=4,deflate=True)
-            elif format=='txt':data='\n\n'.join(p.get_text(sort=True) for p in d).encode()
+            elif format=='txt':data='\n\n'.join(page_texts).encode()
             elif format in ['png','split']:
                 ext='zip'
                 with zipfile.ZipFile(out,'w',zipfile.ZIP_DEFLATED) as z:
@@ -602,10 +649,15 @@ class Engine:
                 data=out.getvalue()
             elif format=='docx':
                 from docx import Document
+                from docx.oxml.ns import qn
                 doc=Document()
-                for i,p in enumerate(d):
+                # Word's default Latin theme does not specify a Chinese face.
+                # Use the Windows CJK face explicitly; other hosts can substitute.
+                doc.styles['Normal'].element.get_or_add_rPr().get_or_add_rFonts().set(qn('w:eastAsia'),'Microsoft YaHei')
+                for i,text in enumerate(page_texts):
                     if i:doc.add_page_break()
-                    for line in p.get_text(sort=True).splitlines():doc.add_paragraph(line)
+                    for line in text.splitlines():
+                        if line.strip():doc.add_paragraph(line)
                 doc.save(out);data=out.getvalue()
             elif format=='xlsx':
                 from openpyxl import Workbook
@@ -613,7 +665,7 @@ class Engine:
                 w=Workbook();w.remove(w.active)
                 for i,p in enumerate(d):
                     sheet=w.create_sheet(f'Page {i+1}');tables=p.find_tables()
-                    rows=[row for table in tables.tables for row in table.extract()] or [[line] for line in p.get_text(sort=True).splitlines()]
+                    rows=[row for table in tables.tables for row in table.extract()] or [[line] for line in page_texts[i].splitlines()]
                     for row in rows:
                         sheet.append([ILLEGAL_CHARACTERS_RE.sub('',str(x or '')) for x in row])
                         for cell in sheet[sheet.max_row]:cell.data_type='s'
